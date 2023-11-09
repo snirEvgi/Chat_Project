@@ -1,7 +1,6 @@
 import express from "express";
 import loginUser from "../handlers/loginUser";
 import { signToken } from "../handlers/signJwt";
-import { sendToQueue } from "../../sender";
 const router = express.Router();
 const queue: string = "securityNotifications";
 
@@ -23,7 +22,6 @@ async function loginHandler(req, res, next) {
     });
     if (!result) {
       if (requests[ip] >= 3) {
-        sendToQueue(queue, { ip, userName });
       }
       throw new Error("User is not authorized");
     }
