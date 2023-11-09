@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 import SocketC from "./Socket";
 import { Link } from "react-router-dom";
-import Products from "./UseDefferedValue";
+// import Products from "./UseDefferedValue";
 
 function App() {
   return (
@@ -25,7 +25,6 @@ function App() {
       </nav>
       <Routes>
         <Route path="/" element={<SocketC />} />
-        <Route path="/usedefferedvalue" element={<Products />} />
         <Route path="/dashboard" element={<div>Dashboard</div>} />
       </Routes>
     </div>
