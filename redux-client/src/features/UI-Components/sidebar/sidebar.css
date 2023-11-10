@@ -1,0 +1,48 @@
+.button-container {
+    margin: 20px;
+    
+  }
+  .iconBtn{
+    background-color: transparent;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    margin-left: 8px;
+}
+  .logoutLi{
+    position: fixed; bottom: 20px;
+  }
+  .sidebarContainer {
+    width: 250px; 
+  }
+  
+  .sidebarHeader {
+    background-color: #007bff;
+    color: white;
+    text-align: center;
+    padding: 15px;
+  }
+  
+  .sidebarList {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .sidebarListItem {
+    margin: 5px 0;
+  }
+  
+  .sidebarLink {
+    text-decoration: none;
+    color: #333;
+    display: block;
+    padding: 8px 15px;
+    transition: background-color 0.2s;
+  }
+  
+  .sidebarLink:hover {
+    background-color: #f0f0f0;
+    cursor: pointer;
+  }
+  

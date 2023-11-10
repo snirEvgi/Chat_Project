@@ -1,0 +1,18 @@
+.header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 0;
+  position: relative;
+  margin-bottom: 10px;
+  left: 10px;
+}
+
+.title {
+  font-size: 32px;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: 600;
+
+}
