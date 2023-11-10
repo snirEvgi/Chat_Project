@@ -1,0 +1,35 @@
+.notFoundContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f0f0f0;
+  }
+  
+  .notFoundContent {
+    text-align: center;
+  }
+  
+  .notFoundImage {
+    max-width: 300px;
+    margin-bottom: 1rem;
+  }
+  
+  .notFoundHeader {
+    font-size: 6rem;
+    margin: 0;
+    color: #e74c3c;
+  }
+  
+  .notFoundSubheader {
+    font-size: 2rem;
+    margin-top: 0.5rem;
+    color: #333;
+  }
+  
+  .notFoundMessage {
+    font-size: 1rem;
+    margin-top: 1rem;
+    color: #777;
+  }
+  
