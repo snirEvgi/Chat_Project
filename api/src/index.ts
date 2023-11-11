@@ -3,11 +3,12 @@ import dotenv from "dotenv";
 dotenv.config();
 import bodyParser from "body-parser";
 import cors from "cors";
-import { initDB } from "./db";
-import router from "./login/route";
+// import { initDB } from "./db";
+// import router from "./login/route";
 import { Server } from "socket.io";
+import { authRouter } from "./auth/route";
 
-initDB();
+// initDB();
 
 const app = express();
 app.use(cors());
@@ -17,7 +18,8 @@ app.get("/healthcheck", async (req, res) => {
   return res.send("API is working!!");
 });
 
-app.use("/login", router);
+// app.use("/login", router);
+app.use("/auth", authRouter);
 
 app.use((error, req, res, next) => {
   return res.status(500).json({ message: "Something went wrong" });
