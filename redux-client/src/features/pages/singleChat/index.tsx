@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { io } from "socket.io-client";
 import "./SingleChatComponent.css";
-
+import { userData } from "../../handlers/hashData";
+const { id, role, firstName, lastName } = userData;
 const socket = io("ws://localhost:4300");
 
 function SingleChatComponent() {
-  const [userName, setUserName] = useState("");
-  const [message, setMessage] = useState("");
+  const [userName, setUserName] = useState(firstName+" "+lastName );
+  const [message, setMessage] = useState(""); 
   const [chatRows, setChatRows] = useState<any[]>([]);
+console.log(userData);
 
   useEffect(() => {
     socket.on("message-from-server", (message) => {
@@ -38,7 +40,7 @@ function SingleChatComponent() {
             key={index}
             style={{ color: row.user === userName ? "green" : "red" }}
           >
-            {`${row.user}: ${row.message}`}
+            {`${userName  }: ${row.message}`}
           </h3>
         ))}
       </div>
