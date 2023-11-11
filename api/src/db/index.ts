@@ -1,34 +1,13 @@
-const mysql2 = require("mysql2/promise");
+import mysql2 from "mysql2/promise";
+import dotenv from "dotenv";
+dotenv.config();
 
-const {
-  MYSQL_DB_HOST: host,
-  MYSQL_DB_PORT: port,
-  MYSQL_DB_USER: user,
-  MYSQL_DB_PASS: password,
-  MYSQL_DB_SCHEMA: database,
-} = process.env;
+const pool = mysql2.createPool({
+  host: process.env.DB_HOST as string,
+  user: "root",
+  port: 3306,
+  password: "admin",
+  database: "chat",
+});
 
-let connection = null;
-
-async function initDB() {
-  console.log("Database initilization Start");
-  try {
-    connection = await mysql2.createConnection({
-      host,
-      port,
-      user,
-      password,
-      database,
-    });
-  } catch (error) {
-    console.log(error);
-    console.log("Application shut down due to MySQL connection error");
-    process.exit(1);
-  }
-}
-
-function getConnection() {
-  return connection;
-}
-
-export { initDB, getConnection };
+export { pool };
