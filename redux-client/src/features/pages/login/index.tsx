@@ -77,15 +77,17 @@ function Login() {
       const userRecord = response?.payload?.userRecord
 
       if (loginUser.fulfilled.match(response)) {
-        localStorage.setItem("token", response.payload.token)
-        localStorage.setItem(
-          "tokenExpiration",
-          response.payload.tokenExpiration,
-        )
-        localStorage.setItem("userEmail", email)
-        localStorage.setItem("userPassword", password)
-        localStorage.setItem("firstName", userRecord?.firstName)
-        localStorage.setItem("lastName", userRecord?.lastName)
+        // console.log(response);
+        
+        // localStorage.setItem("token", response.payload.token)
+        // localStorage.setItem(
+        //   "tokenExpiration",
+        //   response.payload.tokenExpiration,
+        // )
+        // localStorage.setItem("userEmail", email)
+        // localStorage.setItem("userPassword", password)
+        // localStorage.setItem("firstName", userRecord?.firstName)
+        // localStorage.setItem("lastName", userRecord?.lastName)
         const role = userRecord?.role
 
         if (role === "admin") {
