@@ -26,11 +26,11 @@ function SideBar() {
     toggleSidebar()
   }
   const handleAbout = () => {
-    navigate("/")
+    navigate("/singleChat")
     toggleSidebar()
   }
-  const handleSupport = () => {
-    navigate("/")
+  const handleChat = () => {
+    navigate("/singleChat")
     toggleSidebar()
   }
   const handleUserVacations = () => {
@@ -99,8 +99,8 @@ function SideBar() {
             </a>
           </li>
           <li className="sidebar-list-item">
-            <a className="sidebarLink" onClick={handleSupport}>
-              Support Chat
+            <a className="sidebarLink" onClick={handleChat}>
+              SChat
             </a>
           </li>
           {id && (
