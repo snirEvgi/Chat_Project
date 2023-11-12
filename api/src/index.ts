@@ -8,6 +8,7 @@ import cors from "cors";
 import { Server } from "socket.io";
 import { authRouter } from "./auth/route";
 import { chatRouter } from "./chat/route";
+import { messagesRouter } from "./messages";
 
 // initDB();
 
@@ -21,6 +22,7 @@ app.get("/healthcheck", async (req, res) => {
 
 app.use("/auth", authRouter);
 app.use("/chat", chatRouter);
+app.use("/messages", messagesRouter);
 
 app.use((error, req, res, next) => {
   return res.status(500).json({ message: "Something went wrong" });
