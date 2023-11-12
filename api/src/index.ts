@@ -7,6 +7,7 @@ import cors from "cors";
 // import router from "./login/route";
 import { Server } from "socket.io";
 import { authRouter } from "./auth/route";
+import { chatRouter } from "./chat/route";
 
 // initDB();
 
@@ -18,8 +19,8 @@ app.get("/healthcheck", async (req, res) => {
   return res.send("API is working!!");
 });
 
-// app.use("/login", router);
 app.use("/auth", authRouter);
+app.use("/chat", chatRouter);
 
 app.use((error, req, res, next) => {
   return res.status(500).json({ message: "Something went wrong" });
