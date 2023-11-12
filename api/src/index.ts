@@ -37,12 +37,12 @@ const io = new Server(4300, {
 });
 
 const usersMapping = {};
+let onlineUsers = [];
 
 io.on("connection", (socket) => {
   console.log("New connection opened with the Server: ", socket.id);
 
   socket.on("client-login", (userName) => {
-    
     usersMapping[socket.id] = userName;
 
     // socket.broadcast.emit("new-user-logged-in", `${userName} has joined`);
@@ -65,5 +65,15 @@ io.on("connection", (socket) => {
 
     // Sending the formatted message to ALL clients
     io.emit("message-from-server", formattedMessage);
+  });
+
+  socket.on("add-new-user", (userId) => {
+    !onlineUsers.some((user) => user.userId === userId) &&
+      onlineUsers.push({
+        userId,
+        socketId: socket.id,
+      });
+
+    console.log("Online Users", onlineUsers);
   });
 });

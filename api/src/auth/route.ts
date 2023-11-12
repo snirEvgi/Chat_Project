@@ -44,7 +44,6 @@ authRouter.post(
     const { email, password } = req.body;
     try {
       const { result, userRecord } = await login(email, password);
-      console.log(userRecord,"lolololoolololololololol");
       
       if (!result) throw new Error();
       const expiresIn = "1h";

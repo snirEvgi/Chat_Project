@@ -1,36 +1,49 @@
-import React, { useState, useEffect } from "react";
-import { io } from "socket.io-client";
-import "./SingleChatComponent.css";
-import { userData } from "../../handlers/hashData";
-const { id, role, firstName, lastName } = userData;
-const socket = io("ws://localhost:4300");
+import React, { useState, useEffect } from "react"
+import { Socket, io } from "socket.io-client"
+import "./SingleChatComponent.css"
+import { userData } from "../../handlers/hashData"
+const { id, role, firstName, lastName } = userData
 
 function SingleChatComponent() {
-  const [userName, setUserName] = useState(firstName+" "+lastName );
-  const [message, setMessage] = useState(""); 
-  const [chatRows, setChatRows] = useState<any[]>([]);
-console.log(userData);
+  const [userName, setUserName] = useState(firstName + " " + lastName)
+  const [message, setMessage] = useState("")
+  const [chatRows, setChatRows] = useState<any[]>([])
+  const [socket, setSocket] = useState<Socket>()
 
   useEffect(() => {
+    const newSocket = io("ws://localhost:4300")
+    setSocket(newSocket)
+    return () => {
+      newSocket.disconnect()
+    }
+  }, [id])
+
+  useEffect(() => {
+    if (!socket) return
     socket.on("message-from-server", (message) => {
-      setChatRows((prevChatRows) => [...prevChatRows, message]);
-    });
+      setChatRows((prevChatRows) => [...prevChatRows, message])
+    })
+    console.log(id)
+
+    socket.emit("add-new-user", id)
 
     socket.on("new-user-logged-in", (message) => {
       setChatRows((prevChatRows) => [
         ...prevChatRows,
         { user: "Server", message },
-      ]);
-    });
-  }, []);
+      ])
+    })
+  }, [socket])
 
   const handleLogin = () => {
-    socket.emit("client-login", userName);
-  };
+    if (!socket) return
+    socket.emit("client-login", userName)
+  }
 
   const handleSendMessage = () => {
-    socket.emit("client-send-message", message);
-  };
+    if (!socket) return
+    socket.emit("client-send-message", message)
+  }
 
   return (
     <div className="chatBox">
@@ -38,25 +51,27 @@ console.log(userData);
         {chatRows.map((row, index) => (
           <h3
             key={index}
-            style={{ color: row.user === userName ? "green" : "red" }}
+            style={{ color: row.user === socket?.id ? "green" : "red" }}
           >
-            {`${userName  }: ${row.message}`}
+            {`${userName}: ${row.message}`}
           </h3>
         ))}
       </div>
 
       <div className="inputBox">
-
         <input
-        className="inputTextSend"
+          className="inputTextSend"
           type="text"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
         />
-        <button className="buttonSend" onClick={handleSendMessage}> {`>>`}</button>
+        <button className="buttonSend" onClick={handleSendMessage}>
+          {" "}
+          {`>>`}
+        </button>
       </div>
     </div>
-  );
+  )
 }
 
-export default SingleChatComponent;
+export default SingleChatComponent
