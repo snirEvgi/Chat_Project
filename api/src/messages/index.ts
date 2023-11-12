@@ -4,7 +4,7 @@ import postNewMessage from "./handlers/postNewMessage";
 
 const messagesRouter = express.Router();
 
-messagesRouter.get("/:id", getAllMessagesApi);
+messagesRouter.get("/", getAllMessagesApi);
 messagesRouter.post("/newMessage", postNewMessageApi);
 
 async function getAllMessagesApi(
@@ -12,15 +12,15 @@ async function getAllMessagesApi(
   res: Response,
   next: NextFunction
 ) {
-  const { chatId } = req.params;
+  const chatId  = req.query.chatId;
   try {
-    const results = await getAllMessages(chatId);
+    const results = await getAllMessages(chatId as string);
     res.json(results);
   } catch (error) {
     console.log(error);
 
     return next(error);
-  }
+  }   
 }
 async function postNewMessageApi(
   req: Request,

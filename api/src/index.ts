@@ -14,12 +14,12 @@ import { messagesRouter } from "./messages";
 
 const app = express();
 app.use(cors());
-app.use(bodyParser.json());
+app.use(bodyParser.json()); 
 
-app.get("/healthcheck", async (req, res) => {
+app.get("/healthcheck", async (req, res) => { 
   return res.send("API is working!!");
 });
-
+  
 app.use("/auth", authRouter);
 app.use("/chat", chatRouter);
 app.use("/messages", messagesRouter);
