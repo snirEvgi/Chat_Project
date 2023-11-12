@@ -36,5 +36,5 @@ if (decryptedData) {
   userData = decryptedData;
 }
 if (userData && userData.id) {
-  const { id } = userData;
+  const { id } = userData;  
 } 

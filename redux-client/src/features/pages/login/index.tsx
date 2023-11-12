@@ -8,7 +8,8 @@ import { Toast } from "primereact/toast"
 import { Link, useNavigate } from "react-router-dom"
 import { z, ZodError } from "zod"
 import "./login.css"
-
+import { encryptData } from "../../handlers/hashData"
+import { io } from "socket.io-client"
 // Define Zod schema for login form
 const loginSchema = z.object({
   email: z.string().email(),
@@ -88,12 +89,22 @@ function Login() {
         // localStorage.setItem("userPassword", password)
         // localStorage.setItem("firstName", userRecord?.firstName)
         // localStorage.setItem("lastName", userRecord?.lastName)
+        const token = response?.payload?.token
+        // const role = response?.payload?.user?.role
+      const userRecord = response?.payload?.user
+        const exp = response?.payload?.expiration
+        
+        const encryptedData = encryptData(userRecord)
+        
+        localStorage.setItem("token", token)
+        localStorage.setItem("exp", exp)
+        localStorage.setItem("hashedData", encryptedData)
         const role = userRecord?.role
 
         if (role === "admin") {
-          navigate("/admin-vacations")
+          navigate("/singleChat")
         } else {
-          navigate("/vacations")
+          navigate("/singleChat")
         }
       } else {
         handleLoginError(response?.payload)
