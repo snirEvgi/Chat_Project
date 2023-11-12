@@ -47,30 +47,35 @@ function SingleChatComponent() {
 
   return (
     <div className="chatBox">
-      <div className="chatHistory">
-        {chatRows.map((row, index) => (
-          <h3
-            key={index}
-            style={{ color: row.user === socket?.id ? "green" : "red" }}
-          >
-            {`${userName}: ${row.message}`}
-          </h3>
-        ))}
-      </div>
-
-      <div className="inputBox">
-        <input
-          className="inputTextSend"
-          type="text"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-        />
-        <button className="buttonSend" onClick={handleSendMessage}>
-          {" "}
-          {`>>`}
-        </button>
-      </div>
+    <div className="chatHistory">
+      {chatRows.map((row, index) => (
+        <div
+          key={index}
+          className={`messageBubble ${
+            row.user === socket?.id ? "sentMessage" : "receivedMessage"
+          }`}
+        >
+          <span className="messageUser"> {firstName !== undefined ? userName : "Unknown"}:</span>
+          <br />
+          {row.message}
+          <></>
+        </div>
+      ))}
     </div>
+
+    <div className="inputBox">
+      <input
+        className="inputTextSend" 
+        type="text"
+        value={message}
+        onChange={(e) => setMessage(e.target.value)}
+      />
+      <button className="buttonSend" onClick={handleSendMessage}>
+        {" "}
+        {`>>`}
+      </button>
+    </div>
+  </div>
   )
 }
 

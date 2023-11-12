@@ -4,7 +4,7 @@ import { SyntheticEvent, useRef, useState } from 'react';
 
 
 
-export default function SearchDestination(props: { searchAction: Function, allAction: Function }) {
+export default function Search(props: { searchAction: Function, allAction: Function }) {
     const searchInput = useRef<HTMLInputElement>(null)
     const [key ,setKey ] = useState<string>("")
     const handleSearch = () => {

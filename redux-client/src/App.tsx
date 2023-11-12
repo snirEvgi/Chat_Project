@@ -47,12 +47,6 @@ const routes: Array<IRoute> = [
     component: <SignUp />,
     key: "signUp",
   },
-
-  {
-    path: "/singleChat",
-    component: <SingleChatComponent />,
-    key: "singleChat",
-  },
   {
     path: "*",
     component: <NotFound />,
@@ -86,17 +80,8 @@ function App() {
 }
 function Navbar() {
   const navigate = useNavigate()
-  const location = useLocation()
-  const [isSupportOn, setIsSupportOn] = useState<boolean>(false)
   const handleNavigation = async () => {
-    const routeByRole = userRole === "admin" ? "/adminVacation" : "/vacations"
-    if (token && location.pathname === "/home") {
-      navigate(routeByRole)
-    } else if (!token) {
       navigate("/home")
-    } else {
-      navigate("/home")
-    }
   }
   const handleLogout = async () => {
     localStorage.removeItem("token")
@@ -105,18 +90,17 @@ function Navbar() {
     window.location.href = "/home"
   }
 
-  const routeByRole = userRole === "admin" ? "/adminVacation" : "/vacations"
   return (
     <nav className="navbar">
       <div className="logo">
         <span className="navbarBrand" onClick={handleNavigation}>
-          Fly-High
+          ChatChapati
         </span>
         <img
           className="logoImage"
           onClick={handleNavigation}
           src={``}
-          alt="Airplane"
+          alt="Chat"
         />
       </div>
       <ul className="navLinks">

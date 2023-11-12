@@ -6,10 +6,10 @@ const { id, role } = userData
 export function ProtectedRoute(props: { children: any }) {
     const token = localStorage.getItem("token");
   
-    if (token && role) {
+    if (token  ){
       return props.children;
     } 
-    else if (!token||!role ) {
+    else if (!token ) {
       return <NotFound/>
       
           }

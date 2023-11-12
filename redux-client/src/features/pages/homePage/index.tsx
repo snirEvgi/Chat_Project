@@ -6,6 +6,9 @@ import { userData } from '../../handlers/hashData';
 import { Rating } from 'primereact/rating';
 import newUserGuideVideo from "../../../upload/newHere.mp4"
 import { motion as m, useScroll } from "framer-motion"
+import Header from '../../UI-Components/header';
+import SingleChatComponent from '../singleChat';
+import List from '../../UI-Components/list/list';
 
 const initialReviews = [
   {
@@ -37,17 +40,9 @@ const userRole = role;
 type IReview = typeof initialReviews
 const HomePage = () => {
   const navigate = useNavigate();
-  const [reviews, setReviews] = useState(initialReviews);
-  const [userId, setUserId] = useState<number>(0);
   const [isSupportOn, setIsSupportOn] = useState<boolean>(false)
-  const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
-  const { scrollYProgress } = useScroll();
+  const [chats, setChats] = useState<Array<any>>([{ chatId:1,firstUserId:1, secondUserId:2}])
   const headerRef = useRef(null);
-  const trainingGuideRef = useRef(null);
-  const whyChooseUsRef = useRef(null);
-  const featuredDestinationsRef = useRef(null);
-  const customerReviewsRef = useRef(null);
-  const footerRef = useRef(null);
 
   
 
@@ -55,49 +50,24 @@ const HomePage = () => {
 
   useEffect(() => {
     document.title = `Home`
-    setUserId(Number(id));
   }, []);
 
  
-  const scrollToSection = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth',
-    });
-    setCurrentSectionIndex(0);
-  };
-
-  const handleSupportChat = async () => {
-    setIsSupportOn(!isSupportOn)
-  };
-
+  
   return (
-    <div className="mainHomePageDiv">
-    <div className="homepage">
-    
-      <div className="scrollUp" onClick={() => { scrollToSection() }}>
-        <i className="pi pi-angle-double-up"></i>
-      </div>
-     
-       
-        <header className="header" ref={headerRef}>
+    <div className="homePageDiv">
+  <div className="chatHeader">
+    <Header title="This is header" />
+  </div>
 
-
-          <h1 className="title">Welcome to Our Chat</h1>
-        </header>
-
-
-     
-      <footer className="footer" ref={footerRef}>
-        <div className="footer-content">
-          <p>&copy; {new Date().getFullYear()} Fly-High</p>
-          <div className="contact-support">
-            <p>Contact Our Support Team:</p>
-            <a href="mailto:support@flyhigh.com">support@flyhigh.com</a>
-          </div>
-        </div>
-      </footer>
-    </div>
+  <div className="flexedContent">   
+  <div className="leftSideList">
+    <List chats={chats} />
+  </div>
+  <div className="rightSideContainer">
+<SingleChatComponent/>
+  </div>
+  </div>
     </div>
   );
 };
