@@ -75,30 +75,16 @@ function Login() {
 
       // If validation passes, dispatch the login action
       const response = await dispatch(loginUser({ email, password }))
-      const userRecord = response?.payload?.userRecord
+      const userRecord = response?.payload?.user
+      const token = response?.payload?.token
 
       if (loginUser.fulfilled.match(response)) {
-        // console.log(response);
-        
-        // localStorage.setItem("token", response.payload.token)
-        // localStorage.setItem(
-        //   "tokenExpiration",
-        //   response.payload.tokenExpiration,
-        // )
-        // localStorage.setItem("userEmail", email)
-        // localStorage.setItem("userPassword", password)
-        // localStorage.setItem("firstName", userRecord?.firstName)
-        // localStorage.setItem("lastName", userRecord?.lastName)
-        const token = response?.payload?.token
-        // const role = response?.payload?.user?.role
-      const userRecord = response?.payload?.user
         const exp = response?.payload?.expiration
-        
-        const encryptedData = encryptData(userRecord)
-        
-        localStorage.setItem("token", token)
+
         localStorage.setItem("exp", exp)
-        localStorage.setItem("hashedData", encryptedData)
+        localStorage.setItem("userRecord", JSON.stringify(userRecord))
+        localStorage.setItem("token", token)
+
         const role = userRecord?.role
 
         if (role === "admin") {

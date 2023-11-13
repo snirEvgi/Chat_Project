@@ -4,7 +4,7 @@ import { Button } from "primereact/button"
 import "./sidebar.css"
 import { useNavigate } from "react-router-dom"
 import { userData } from "../../handlers/hashData"
-const { id, role, first_name, last_name } = userData
+// const { id, role, first_name, last_name } = userData
 
 function SideBar() {
   const navigate = useNavigate()
@@ -44,11 +44,11 @@ function SideBar() {
     window.location.href = "/home"
   }
   const handleVacations = () => {
-    const routeByRole = role === "admin" ? "/adminVacation" : "/vacations"
+    const routeByRole = userData?.role === "admin" ? "/adminVacation" : "/vacations"
     navigate(routeByRole)
     toggleSidebar()
   }
-  const textByRole = role === "admin" ? "Admin Vacations" : "Vacations"
+  const textByRole = userData?.role === "admin" ? "Admin Vacations" : "Vacations"
 
   return (
     <div className="buttonContainer">
@@ -78,14 +78,14 @@ function SideBar() {
               Sign-Up <i className="pi pi-check"></i>
             </a>
           </li>
-          {id && (
+          {userData?.id && (
             <li className="sidebar-list-item">
               <a className="sidebarLink" onClick={handleVacations}>
                 {textByRole}
               </a>
             </li>
           )}
-          {role === "admin" && (
+          {userData?.role === "admin" && (
             <li className="sidebar-list-item">
               <a className="sidebarLink" onClick={handleUserVacations}>
                 Vacations
@@ -103,7 +103,7 @@ function SideBar() {
               SChat
             </a>
           </li>
-          {id && (
+          {userData?.id && (
             <li className="sidebar-list-item">
               {" "}
               {/*logoutLi*/}

@@ -20,10 +20,9 @@ import { userData } from "./features/handlers/hashData"
 import SingleChatComponent from "./features/pages/singleChat"
 import Login from "./features/pages/login"
 import SignUp from "./features/pages/sign-up"
-const token = localStorage.getItem("token")
-const { id, role, first_name } = userData
-const userId = id
-const userRole = role
+
+// const { id, role, first_name } = userData
+
 interface IRoute {
   path: string
   key: string
@@ -56,6 +55,7 @@ const routes: Array<IRoute> = [
 
 function App() {
   const { scrollYProgress } = useScroll()
+  const token = localStorage.getItem("token")
 
   return (
     <Router>
@@ -79,13 +79,15 @@ function App() {
   )
 }
 function Navbar() {
+  const token = localStorage.getItem("token")
+
   const navigate = useNavigate()
   const handleNavigation = async () => {
-      navigate("/home")
+    navigate("/home")
   }
   const handleLogout = async () => {
     localStorage.removeItem("token")
-    localStorage.removeItem("hashedData")
+    localStorage.removeItem("userRecord")
     localStorage.removeItem("exp")
     window.location.href = "/home"
   }

@@ -1,40 +1,42 @@
-import CryptoJS from 'crypto-js';
-const SECRET_KEY = 'yourSecretKey';
+import CryptoJS from "crypto-js"
+
+const SECRET_KEY = "yourSecretKey"
+
 export function encryptData(data: any) {
-  const encryptedData = CryptoJS.AES.encrypt(JSON.stringify(data), SECRET_KEY);
-  return encryptedData.toString();
+  const encryptedData = CryptoJS.AES.encrypt(JSON.stringify(data), SECRET_KEY)
+  return encryptedData.toString()
 }
 
 export function decryptData(encryptedData: any) {
-  if (!encryptedData) return null;
+  return new Promise((resolve, reject) => {
+    if (!encryptedData) reject("No encrypted data")
+
+    try {
+      const bytes = CryptoJS.AES.decrypt(encryptedData, SECRET_KEY)
+      const decryptedData = JSON.parse(bytes.toString(CryptoJS.enc.Utf8))
+      resolve(decryptedData)
+    } catch (error) {
+      reject("Error decrypting data")
+    }
+  })
+}
+
+export async function myDecryptedData() {
   try {
-    const bytes = CryptoJS.AES.decrypt(encryptedData, SECRET_KEY);
-    const decryptedData = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
-    return decryptedData;
+    const storedEncryptedData = localStorage.getItem("hashedData")
+    const decryptedData = await decryptData(storedEncryptedData)
+    return decryptedData || null
   } catch (error) {
-    return null;
+    return null
   }
 }
-export  function myDecryptedData() {
-  
-  const storedEncryptedData = localStorage.getItem("hashedData");
-  const decryptedData =  decryptData(storedEncryptedData);
-   let userData: any = false;
-  if (decryptedData) {
-    userData = decryptedData;
-  }
+
+export let userData: any = null
+
+;(async () => {
+  userData = await myDecryptedData()
+
   if (userData && userData.id) {
-    const { id } = userData;
-  } 
-  return userData
-  
-}
-const storedEncryptedData = localStorage.getItem("hashedData");
-const decryptedData =  decryptData(storedEncryptedData);
- export let userData: any = false;
-if (decryptedData) {
-  userData = decryptedData;
-}
-if (userData && userData.id) {
-  const { id } = userData;  
-} 
+    const { id } = userData
+  }
+})()

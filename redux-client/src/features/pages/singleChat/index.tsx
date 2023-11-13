@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from "react"
+import { useAppDispatch, useAppSelector } from "../../../app/hooks"
 import { Socket, io } from "socket.io-client"
 import "./SingleChatComponent.css"
-import { userData } from "../../handlers/hashData"
-const { id, role, firstName, lastName } = userData
+// import { checkUserToken } from "../login/loginSlice"
 
 function SingleChatComponent() {
-  const [userName, setUserName] = useState(firstName + " " + lastName)
+  const dispatch = useAppDispatch()
+  // const userData1 = useAppSelector((state) => state.login.user)?.user
+  const userData = JSON.parse(localStorage.getItem("userRecord") as any)
+  const userName = userData?.firstName + " " + userData?.lastName
+
   const [message, setMessage] = useState("")
   const [chatRows, setChatRows] = useState<any[]>([])
   const [socket, setSocket] = useState<Socket>()
@@ -16,17 +20,19 @@ function SingleChatComponent() {
     return () => {
       newSocket.disconnect()
     }
-  }, [id])
+  }, [userData?.id])
+
+  // useEffect(() => {
+  //   dispatch(checkUserToken())
+  // }, [dispatch])
 
   useEffect(() => {
     if (!socket) return
     socket.on("message-from-server", (message) => {
       setChatRows((prevChatRows) => [...prevChatRows, message])
     })
-    console.log(id)
 
-    socket.emit("add-new-user", id)
-
+    socket.emit("add-new-user", userData?.id)
     socket.on("new-user-logged-in", (message) => {
       setChatRows((prevChatRows) => [
         ...prevChatRows,
@@ -47,35 +53,38 @@ function SingleChatComponent() {
 
   return (
     <div className="chatBox">
-    <div className="chatHistory">
-      {chatRows.map((row, index) => (
-        <div
-          key={index}
-          className={`messageBubble ${
-            row.user === socket?.id ? "sentMessage" : "receivedMessage"
-          }`}
-        >
-          <span className="messageUser"> {firstName !== undefined ? userName : "Unknown"}:</span>
-          <br />
-          {row.message}
-          <></>
-        </div>
-      ))}
-    </div>
+      <div className="chatHistory">
+        {chatRows.map((row, index) => (
+          <div
+            key={index}
+            className={`messageBubble ${
+              row.user === socket?.id ? "sentMessage" : "receivedMessage"
+            }`}
+          >
+            <span className="messageUser">
+              {" "}
+              {userData?.firstName !== undefined ? userName : "Unknown"}:
+            </span>
+            <br />
+            {row.message}
+            <></>
+          </div>
+        ))}
+      </div>
 
-    <div className="inputBox">
-      <input
-        className="inputTextSend" 
-        type="text"
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-      />
-      <button className="buttonSend" onClick={handleSendMessage}>
-        {" "}
-        {`>>`}
-      </button>
+      <div className="inputBox">
+        <input
+          className="inputTextSend"
+          type="text"
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+        />
+        <button className="buttonSend" onClick={handleSendMessage}>
+          {" "}
+          {`>>`}
+        </button>
+      </div>
     </div>
-  </div>
   )
 }
 
