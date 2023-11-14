@@ -4,7 +4,9 @@ import { ScrollPanel } from "primereact/scrollpanel"
 import "./list.css"
 
 const List = (props: any) => {
-
+const handler = async ()=>{
+    
+}
   return (
     <Panel className="listContainer" header="Chat List">
       <ScrollPanel style={{ height: "20rem" }}>

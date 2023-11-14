@@ -2,7 +2,7 @@ import { pool } from "../../db";
 
 interface IMessage {
   senderId: string;
-  chatId: string;
+  chatId: number;
   text: string;
 }
 export default async function postNewMessage(messagePack: IMessage) {

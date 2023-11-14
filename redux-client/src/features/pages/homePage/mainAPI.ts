@@ -35,14 +35,5 @@ import { url } from "../../pages/sign-up/signUpAPI";
   }
 }
 
- async function postNewMessage(chatId: string): Promise<any> {
-  try {
-    const result = await axios.get(`${url}/newMessages?chatId=${chatId}`,)
-    console.log(result);
-    
-    return result.data
-  } catch (error) {
-  
-  }
-}
-export  {fetchAllChats,fetchSingleChat,fetchAllMessages,postNewMessage }
+
+export  {fetchAllChats,fetchSingleChat,fetchAllMessages }

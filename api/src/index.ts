@@ -86,8 +86,16 @@ io.on("connection", (socket) => {
   });
 
   socket.on('message', (data) => {
+    
+    const sender = usersMapping[socket.id] || socket.id;
+    
+    const messageData = {
+      roomId: data.roomId,
+      message: data.message,
+      senderId: sender,
+    };
     console.log(`Received message: ${data.message} from user ${socket.id}`);
-    io.to(data.roomId).emit('message', data);
+    io.to(data.roomId).emit('message', messageData);
   });
 
   socket.on('disconnect', () => {

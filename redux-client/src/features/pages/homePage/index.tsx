@@ -17,9 +17,10 @@ const HomePage = () => {
   const navigate = useNavigate()
   const [isChatOn, setIsChatOn] = useState<boolean>(false)
   const [chats, setChats] = useState<Array<any>>([])
+  const [chatId, setChatId] = useState<Array<any>>([])
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchChatsData = async () => {
       try {
         const result = await fetchAllChats()
         setChats(result)
@@ -28,7 +29,8 @@ const HomePage = () => {
         console.error("Error fetching chats:", error)
       }
     }
-    fetchData()
+    fetchChatsData()
+
   }, [])
   useEffect(() => {
     document.title = `Home`

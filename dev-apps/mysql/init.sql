@@ -24,12 +24,18 @@ USE `chat`;
 DROP TABLE IF EXISTS `chats`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
+
 CREATE TABLE `chats` (
-  `chatId` int NOT NULL AUTO_INCREMENT,
-  `firstUserId` varchar(45) DEFAULT NULL,
-  `secondUserId` varchar(45) DEFAULT NULL,
-  PRIMARY KEY (`chatId`)
+  `chatId` INT NOT NULL AUTO_INCREMENT,
+  `firstUserId` INT,
+  `secondUserId` INT,
+  PRIMARY KEY (`chatId`),
+  KEY `firstUserId` (`firstUserId`),
+  KEY `secondUserId` (`secondUserId`),
+  CONSTRAINT `fk_firstUserId` FOREIGN KEY (`firstUserId`) REFERENCES `users` (`id`),
+  CONSTRAINT `fk_secondUserId` FOREIGN KEY (`secondUserId`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -47,14 +53,17 @@ UNLOCK TABLES;
 --
 
 CREATE TABLE `messages` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `senderId` varchar(45) DEFAULT NULL,
-  `text` varchar(45) DEFAULT NULL,
-  `chatId` int DEFAULT NULL,
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `senderId` INT,
+  `text` TEXT,
+  `chatId` INT,
+  `timestamp` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  KEY `chatKey_idx` (`chatId`),
-  CONSTRAINT `chatKey` FOREIGN KEY (`chatId`) REFERENCES `chats` (`chatId`)
+  KEY `chatId` (`chatId`),
+  CONSTRAINT `fk_senderId` FOREIGN KEY (`senderId`) REFERENCES `users` (`id`),
+  CONSTRAINT `fk_chatId` FOREIGN KEY (`chatId`) REFERENCES `chats` (`chatId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 
 
 --
