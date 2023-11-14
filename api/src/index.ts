@@ -43,10 +43,10 @@ const usersMapping = {};
 let onlineUsers = [];
 
 io.on("connection", (socket) => {
-  console.log("New connection opened with the Server: ", socket.id);
+  // console.log("New connection opened with the Server: ", socket.id);
 
   socket.on("client-login", (userName) => {
-    usersMapping[socket.id] = userName;
+    // usersMapping[socket.id] = userName;
 
     // socket.broadcast.emit("new-user-logged-in", `${userName} has joined`);
 
@@ -61,14 +61,14 @@ io.on("connection", (socket) => {
   });
 
   // Listen to messages sent by the client
-  socket.on("client-send-message", (message) => {
-    const user = usersMapping[socket.id] || socket.id;
-    const formattedMessage = { user, message };
-    console.log(message);
+  // socket.on("client-send-message", (message) => {
+  //   const user = usersMapping[socket.id] || socket.id;
+  //   const formattedMessage = { user, message };
+  //   console.log(message);
 
-    // Sending the formatted message to ALL clients
-    io.emit("message-from-server", formattedMessage);
-  });
+  //   // Sending the formatted message to ALL clients
+  //   io.emit("message-from-server", formattedMessage);
+  // });
 
   socket.on("add-new-user", (userId) => {
     !onlineUsers.some((user) => user.userId === userId) &&
@@ -78,4 +78,25 @@ io.on("connection", (socket) => {
       });
 
   });
+
+
+  socket.on('joinRoom', (roomId) => {
+    socket.join(roomId);
+    console.log(`User ${socket.id} joined room ${roomId}`);
+  });
+
+  socket.on('message', (data) => {
+    console.log(`Received message: ${data.message} from user ${socket.id}`);
+    io.to(data.roomId).emit('message', data);
+  });
+
+  socket.on('disconnect', () => {
+    console.log('User disconnected:', socket.id);
+  });
+  
 });
+
+
+
+
+

@@ -87,11 +87,9 @@ function Login() {
 
         const role = userRecord?.role
 
-        if (role === "admin") {
-          navigate("/singleChat")
-        } else {
-          navigate("/singleChat")
-        }
+    
+          navigate("/home")
+        
       } else {
         handleLoginError(response?.payload)
       }

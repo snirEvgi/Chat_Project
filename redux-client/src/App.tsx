@@ -33,7 +33,11 @@ interface IRoute {
 const routes: Array<IRoute> = [
   {
     path: "/home",
-    component: <HomePage />,
+    component: (
+      <ProtectedRoute>
+        <HomePage />
+      </ProtectedRoute>
+    ),
     key: "home",
   },
   {

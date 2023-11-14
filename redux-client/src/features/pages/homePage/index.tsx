@@ -35,7 +35,7 @@ const HomePage = () => {
   }, [])
 
   const handleChatClick = () => { //chatId:string
-    setIsChatOn(true)
+    setIsChatOn(!isChatOn)
 
     // Example: navigate(`/chat/${chatId}`);
   };
@@ -49,12 +49,12 @@ const HomePage = () => {
       <div className="flexedContent">
         <div className="leftSideList">
           <List
-            chats={chats}
-            onClick={() => {handleChatClick}}
+            chats={chats} 
+            onClick={handleChatClick}
           />
         </div>
         <div className="rightSideContainer">
-          <SingleChatComponent chatOn = {isChatOn}/>
+          <SingleChatComponent chatOn = {isChatOn} roomId={1}/>
         </div>
       </div>
     </div>
