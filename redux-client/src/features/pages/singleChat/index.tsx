@@ -3,8 +3,8 @@ import { useAppDispatch, useAppSelector } from "../../../app/hooks"
 import { Socket, io } from "socket.io-client"
 import "./SingleChatComponent.css"
 // import { checkUserToken } from "../login/loginSlice"
-
-function SingleChatComponent() {
+ 
+function SingleChatComponent(props:any) {
   const dispatch = useAppDispatch()
   // const userData1 = useAppSelector((state) => state.login.user)?.user
   const userData = JSON.parse(localStorage.getItem("userRecord") as any)
@@ -53,7 +53,7 @@ function SingleChatComponent() {
 
   return (
     <div className="chatBox">
-      <div className="chatHistory">
+      {props.chatOn === true ? <div className="chatHistory"> 
         {chatRows.map((row, index) => (
           <div
             key={index}
@@ -70,7 +70,8 @@ function SingleChatComponent() {
             <></>
           </div>
         ))}
-      </div>
+      
+      </div> : <div className="chatHistory"> Choose a chat...</div>}
 
       <div className="inputBox">
         <input

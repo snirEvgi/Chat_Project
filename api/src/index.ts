@@ -19,7 +19,7 @@ app.use(bodyParser.json());
 app.get("/healthcheck", async (req, res) => { 
   return res.send("API is working!!");
 });
-  
+
 app.use("/auth", authRouter);
 app.use("/chat", chatRouter);
 app.use("/messages", messagesRouter);
@@ -77,6 +77,5 @@ io.on("connection", (socket) => {
         socketId: socket.id,
       });
 
-    console.log("Online Users", onlineUsers);
   });
 });
