@@ -4,6 +4,14 @@
     margin: 20px;
 min-height: 27rem;  
 }
+
+.rightSideContainer {
+  min-width: 50rem;
+  padding: 10px;
+  position: absolute;
+  left: 30rem;
+  top: 16.5rem;
+}
   
   .listHeader {
     font-size: 18px;
