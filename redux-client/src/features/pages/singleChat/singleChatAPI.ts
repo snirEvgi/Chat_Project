@@ -4,7 +4,7 @@ import { IMessage } from "./singleChatSlice";
 
 export async function postNewMessage(message:IMessage) {
   try {
-    const result = await axios.post(`${url}/message/newMessage`,message)
+    const result = await axios.post(`${url}/messages/newMessage`,message)
     console.log(result);
     
     return result.data

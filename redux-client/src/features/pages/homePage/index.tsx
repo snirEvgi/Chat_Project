@@ -30,17 +30,17 @@ const HomePage = () => {
       }
     }
     fetchChatsData()
-
   }, [])
   useEffect(() => {
     document.title = `Home`
   }, [])
 
-  const handleChatClick = () => { //chatId:string
+  const handleChatClick = () => {
+    //chatId:string
     setIsChatOn(!isChatOn)
 
     // Example: navigate(`/chat/${chatId}`);
-  };
+  }
 
   return (
     <div className="homePageDiv">
@@ -50,13 +50,7 @@ const HomePage = () => {
 
       <div className="flexedContent">
         <div className="leftSideList">
-          <List
-            chats={chats} 
-            onClick={handleChatClick}
-          />
-        </div>
-        <div className="rightSideContainer">
-          <SingleChatComponent chatOn = {isChatOn} roomId={1}/>
+          <List chats={chats} onClick={handleChatClick} />
         </div>
       </div>
     </div>
