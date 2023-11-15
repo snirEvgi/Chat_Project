@@ -10,6 +10,17 @@ export async function postNewMessage(message:IMessage) {
     return result.data
   } catch (error) {
   console.log(error);
-  
+  }
+}
+
+
+export async function getMessages(chatId: number) {
+  try {
+    const result = await axios.get(`${url}/messages?chatId=${chatId}`)
+    console.log(result)
+
+    return result.data
+  } catch (error) {
+    console.log(error)
   }
 }
