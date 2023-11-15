@@ -1,8 +1,7 @@
-
 .listContainer {
-    min-width: 200px;
-    margin: 20px;
-min-height: 27rem;  
+  min-width: 200px;
+  margin: 20px;
+  min-height: 27rem;
 }
 
 .rightSideContainer {
@@ -12,35 +11,32 @@ min-height: 27rem;
   left: 30rem;
   top: 16.5rem;
 }
-  
-  .listHeader {
-    font-size: 18px;
-    color: #333;
-    margin-bottom: 10px;
-  }
-  
-  .chatList {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-  }
-  
-  .chatItem {
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    margin-bottom: 8px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  
-  .chatItem:hover {
-    background-color: #f2f2f2;
-  }
-  
-  .chatName {
-    font-weight: bold;
-  }
-  
 
-  
+.listHeader {
+  font-size: 18px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.chatList {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.chatItem {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.chatItem:hover {
+  background-color: #f2f2f2;
+}
+
+.chatName {
+  font-weight: bold;
+}
