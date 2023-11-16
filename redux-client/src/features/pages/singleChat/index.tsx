@@ -10,30 +10,37 @@ function SingleChatComponent(props: any) {
   const userData = JSON.parse(localStorage.getItem("userRecord") as any)
   const userName = userData?.firstName + " " + userData?.lastName
   const [message, setMessage] = useState("")
-  const [sender, setSender] = useState("")
+  const sender = userData?.email
   const [chatRows, setChatRows] = useState<any[]>([])
   const [socket, setSocket] = useState<Socket>()
+  const [flag, setFlag] = useState(false)
+
+  const fetchChatHistory = async () => {
+    const history = await getMessages(props.roomId)
+    console.log(history, "this")
+    setChatRows(history)
+  }
 
   useEffect(() => {
+    if (!flag) fetchChatHistory()
+  }, [chatRows])
+
+  useEffect(() => {
+    setFlag(true)
     const newSocket = io("http://localhost:4300")
-
-    const fetchChatHistory = async () => {
-      const history = await getMessages(props.roomId)
-      console.log(history)
-
-      setChatRows(history)
-    }
-
-    fetchChatHistory()
 
     // Join the chat room
     newSocket.emit("joinRoom", props.roomId)
 
     // Listen for incoming messages
     newSocket.on("message", (data) => {
-      setSender(data.senderId)
+      console.log(data)
+
+      // setSender(data.senderId)
       setMessage(data.message)
-      setChatRows((prevMessages) => [...prevMessages, data])
+      setChatRows((prevMessages) => {
+        return [...prevMessages, data]
+      })
     })
 
     setSocket(newSocket)
@@ -57,11 +64,13 @@ function SingleChatComponent(props: any) {
       }
       try {
         const response = await dispatch(sendMessage(messagePack))
-        console.log(response)
+        fetchChatHistory()
+        setFlag(true)
       } catch (error) {
         console.log(error)
       } finally {
         setMessage("")
+        setFlag(true)
       }
     }
   }
@@ -76,15 +85,15 @@ function SingleChatComponent(props: any) {
               <div
                 key={index}
                 className={`messageBubble ${
-                  row.senderId === socket?.id
-                    ? "sentMessage"
-                    : "receivedMessage"
+                  row.senderId === sender ? "sentMessage" : "receivedMessage"
                 }`}
               >
                 <span className="messageUser">
-                  {row.senderId === socket?.id
+                  {row.senderId === sender
                     ? "You"
-                    : row.senderId || "Unknown"}
+                    : userName
+                    ? row.senderId
+                    : "Unknown"}
                   :
                 </span>{" "}
                 {row.text}

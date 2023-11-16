@@ -14,9 +14,9 @@ import { messagesRouter } from "./messages";
 
 const app = express();
 app.use(cors());
-app.use(bodyParser.json()); 
+app.use(bodyParser.json());
 
-app.get("/healthcheck", async (req, res) => { 
+app.get("/healthcheck", async (req, res) => {
   return res.send("API is working!!");
 });
 
@@ -47,15 +47,12 @@ io.on("connection", (socket) => {
 
   socket.on("client-login", (userName) => {
     // usersMapping[socket.id] = userName;
-
     // socket.broadcast.emit("new-user-logged-in", `${userName} has joined`);
-
     // Send a connection message to the specific user
     // socket.emit("message-from-server", {
     //   user: "Server",
     //   message: `You (${userName}) are now connected`,
     // });
-
     // Notify other users about the new user joining
     // socket.broadcast.emit("new-user-logged-in", `${userName} has joined`);
   });
@@ -76,35 +73,34 @@ io.on("connection", (socket) => {
         userId,
         socketId: socket.id,
       });
-
   });
 
-
-  socket.on('joinRoom', (roomId) => {
+  socket.on("joinRoom", (roomId) => {
     socket.join(roomId);
     console.log(`User ${socket.id} joined room ${roomId}`);
   });
 
-  socket.on('message', (data) => {
+  socket.on("message", async (data) => {
+    console.log(data);
     
-    const sender = usersMapping[socket.id] || socket.id;
-    
-    const messageData = {
-      roomId: data.roomId,
-      message: data.message,
-      senderId: sender,
-    };
-    console.log(`Received message: ${data.message} from user ${socket.id}`);
-    io.to(data.roomId).emit('message', messageData);
+    const sender = onlineUsers.find((user) => user.socketId === socket.id);
+    if (sender) {
+      const messageData = {
+        roomId: data.roomId,
+        message: data.message,
+        senderId: sender.userId, // Use userId instead of socket.id
+      };
+      console.log(
+        `Received message: ${data.message} from user ${sender.userId}`
+      );
+      io.to(data.roomId).emit("message", messageData);
+
+      // Save the message to the database here using your database logic
+      // Example: await saveMessageToDatabase(messageData);
+    }
   });
 
-  socket.on('disconnect', () => {
-    console.log('User disconnected:', socket.id);
+  socket.on("disconnect", () => {
+    console.log("User disconnected:", socket.id);
   });
-  
 });
-
-
-
-
-

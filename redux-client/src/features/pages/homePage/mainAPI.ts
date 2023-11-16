@@ -6,8 +6,6 @@ import { url } from "../../pages/sign-up/signUpAPI";
  async function fetchAllChats(): Promise<any> {
   try {
     const result = await axios.get(`${url}/chat`,)
-    console.log(result, "allChats");
-    
     return result.data
   } catch (error) {
     
@@ -17,8 +15,6 @@ import { url } from "../../pages/sign-up/signUpAPI";
  async function fetchSingleChat(chatId: string): Promise<any> {
   try {
     const result = await axios.get(`${url}/chat?chatId=${chatId}`,)
-    console.log(result);
-    
     return result.data
   } catch (error) {
   
@@ -27,8 +23,6 @@ import { url } from "../../pages/sign-up/signUpAPI";
  async function fetchAllMessages(): Promise<any> {
   try {
     const result = await axios.get(`${url}/messages`,)
-    console.log(result, "messages");
-    
     return result.data
   } catch (error) {
     
