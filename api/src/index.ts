@@ -9,6 +9,7 @@ import { Server } from "socket.io";
 import { authRouter } from "./auth/route";
 import { chatRouter } from "./chat/route";
 import { messagesRouter } from "./messages";
+import { usersRouter } from "./users/route";
 
 // initDB();
 
@@ -22,6 +23,7 @@ app.get("/healthcheck", async (req, res) => {
 
 app.use("/auth", authRouter);
 app.use("/chat", chatRouter);
+app.use("/users", usersRouter);
 app.use("/messages", messagesRouter);
 
 app.use((error, req, res, next) => {
@@ -104,8 +106,8 @@ io.on("connection", (socket) => {
     const user = onlineUsers.find((user) => user.userId === message.receiverId);
 
     const messageData = {
-      text: message.newMessage,
-      senderId: message.userName,
+      text: message?.newMessage,
+      senderId: message?.email,
     };
     if (user) {
       io.to(user.socketId).emit("getMessage", messageData);

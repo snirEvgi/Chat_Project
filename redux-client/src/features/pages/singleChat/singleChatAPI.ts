@@ -19,3 +19,11 @@ export async function getMessages(chatId: number) {
     console.log(error)
   }
 }
+export async function getUser(userId: number) {
+  try {
+    const result = await axios.get(`${url}/users/userBy?userId=${userId}`)
+    return result.data
+  } catch (error) {
+    console.log(error)
+  }
+}
