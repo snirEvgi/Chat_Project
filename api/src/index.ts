@@ -102,8 +102,13 @@ io.on("connection", (socket) => {
 
   socket.on("sendMessage", (message) => {
     const user = onlineUsers.find((user) => user.userId === message.receiverId);
+
+    const messageData = {
+      text: message.newMessage,
+      senderId: message.userName,
+    };
     if (user) {
-      io.to(user.socketId).emit("getMessage", message);
+      io.to(user.socketId).emit("getMessage", messageData);
     }
   });
 

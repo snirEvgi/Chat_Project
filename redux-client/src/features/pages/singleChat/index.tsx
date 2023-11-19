@@ -54,6 +54,7 @@ function SingleChatComponent(props: any) {
       setChatRows((prevMessages) => {
         return [...prevMessages, data]
       })
+      setMessage("")
     })
 
     setSocket(newSocket)
@@ -75,8 +76,7 @@ function SingleChatComponent(props: any) {
   }, [socket])
 
   useEffect(() => {
-    socket?.emit("sendMessage", { ...newMessage, receiverId })
-    console.log(newMessage)
+    socket?.emit("sendMessage", { newMessage, receiverId })
   }, [newMessage])
 
   useEffect(() => {
@@ -84,7 +84,7 @@ function SingleChatComponent(props: any) {
       console.log(res, "the message")
 
       setChatRows((prevMessages) => {
-        return [...prevMessages, newMessage]
+        return [...prevMessages, res]
       })
     })
 
