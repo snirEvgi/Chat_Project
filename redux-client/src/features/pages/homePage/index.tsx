@@ -7,7 +7,7 @@ import { Rating } from "primereact/rating"
 import newUserGuideVideo from "../../../upload/newHere.mp4"
 import { motion as m, useScroll } from "framer-motion"
 import Header from "../../UI-Components/header"
-import SingleChatComponent from "../singleChat"
+// import SingleChatComponent from "../singleChat"
 import List from "../../UI-Components/list/list"
 
 import { fetchAllChats, fetchSingleChat } from "./mainAPI"

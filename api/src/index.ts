@@ -73,6 +73,8 @@ io.on("connection", (socket) => {
         userId,
         socketId: socket.id,
       });
+    console.log(onlineUsers, "onlineUsers");
+    io.emit("getOnlineUsers", onlineUsers);
   });
 
   socket.on("joinRoom", (roomId) => {
@@ -80,9 +82,7 @@ io.on("connection", (socket) => {
     console.log(`User ${socket.id} joined room ${roomId}`);
   });
 
-  socket.on("message", async (data) => {
-    console.log(data);
-    
+  socket.on("message", (data) => {
     const sender = onlineUsers.find((user) => user.socketId === socket.id);
     if (sender) {
       const messageData = {
@@ -100,7 +100,16 @@ io.on("connection", (socket) => {
     }
   });
 
+  socket.on("sendMessage", (message) => {
+    const user = onlineUsers.find((user) => user.userId === message.receiverId);
+    if (user) {
+      io.to(user.socketId).emit("getMessage", message);
+    }
+  });
+
   socket.on("disconnect", () => {
+    onlineUsers = onlineUsers.filter((user) => user.socketId !== socket.id);
+    io.emit("getOnlineUsers", onlineUsers);
     console.log("User disconnected:", socket.id);
   });
 });

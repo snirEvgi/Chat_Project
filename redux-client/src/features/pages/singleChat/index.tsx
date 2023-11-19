@@ -10,23 +10,34 @@ function SingleChatComponent(props: any) {
   const userData = JSON.parse(localStorage.getItem("userRecord") as any)
   const userName = userData?.firstName + " " + userData?.lastName
   const [message, setMessage] = useState("")
+  const [newMessage, setNewMessage] = useState({})
   const sender = userData?.email
   const [chatRows, setChatRows] = useState<any[]>([])
   const [socket, setSocket] = useState<Socket>()
-  const [flag, setFlag] = useState(false)
+  const [onlineUsers, setOnlineUsers] = useState([])
+
+  const receiverId = (
+    onlineUsers.find((data: any) => data.userId !== userData.id) as any
+  )?.userId
+
+  console.log(receiverId)
+  console.log(onlineUsers)
 
   const fetchChatHistory = async () => {
-    const history = await getMessages(props.roomId)
-    console.log(history, "this")
-    setChatRows(history)
+    try {
+      const history = await getMessages(props.roomId)
+      console.log(history, "this")
+      setChatRows(history)
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   useEffect(() => {
-    if (!flag) fetchChatHistory()
-  }, [chatRows])
+    fetchChatHistory()
+  }, [])
 
   useEffect(() => {
-    setFlag(true)
     const newSocket = io("http://localhost:4300")
 
     // Join the chat room
@@ -37,7 +48,9 @@ function SingleChatComponent(props: any) {
       console.log(data)
 
       // setSender(data.senderId)
+      setNewMessage(data.message)
       setMessage(data.message)
+
       setChatRows((prevMessages) => {
         return [...prevMessages, data]
       })
@@ -49,6 +62,36 @@ function SingleChatComponent(props: any) {
       newSocket.disconnect()
     }
   }, [props.roomId])
+
+  useEffect(() => {
+    socket?.emit("add-new-user", userData?.id)
+    socket?.on("getOnlineUsers", (res) => {
+      setOnlineUsers(res)
+    })
+
+    return () => {
+      socket?.off("getOnlineUsers")
+    }
+  }, [socket])
+
+  useEffect(() => {
+    socket?.emit("sendMessage", { ...newMessage, receiverId })
+    console.log(newMessage)
+  }, [newMessage])
+
+  useEffect(() => {
+    socket?.on("getMessage", (res) => {
+      console.log(res, "the message")
+
+      setChatRows((prevMessages) => {
+        return [...prevMessages, newMessage]
+      })
+    })
+
+    return () => {
+      socket?.off("getMessage")
+    }
+  }, [socket])
 
   const handleSendMessage = async () => {
     if (socket && message.trim() !== "") {
@@ -65,12 +108,10 @@ function SingleChatComponent(props: any) {
       try {
         const response = await dispatch(sendMessage(messagePack))
         fetchChatHistory()
-        setFlag(true)
       } catch (error) {
         console.log(error)
       } finally {
         setMessage("")
-        setFlag(true)
       }
     }
   }
