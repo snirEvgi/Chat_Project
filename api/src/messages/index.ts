@@ -27,11 +27,12 @@ async function postNewMessageApi(
   res: Response,
   next: NextFunction
 ) {
-  const { senderId, chatId, text } = req.body;
+  const { name, room, text,time } = req.body;
   const messagePack = {
-    senderId,
-    chatId,
+    name,
+    room : Number(room),
     text,
+    time:time as string
   };
   try {
     const results = await postNewMessage(messagePack);

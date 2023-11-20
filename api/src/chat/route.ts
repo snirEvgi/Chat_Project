@@ -36,10 +36,13 @@ chatRouter.post(
   "/new",
   async function (req: Request, res: Response, next: NextFunction) {
     try {
-      const { firstUserId, secondUserId } = req.body;
+      const { firstUserId, secondUserId, firstUserName,
+        secondUserName} = req.body;
+        const dataForPost = {firstUserId, secondUserId,firstUserName,secondUserName}
       if (!firstUserId || !secondUserId) throw new Error("Invalid user id");
-      await createNewChatApi(firstUserId, secondUserId);
-      res.json({ message: "chat has started" });
+
+     const data = await createNewChatApi(dataForPost);
+      res.json({ message: "chat has started", data});
     } catch (error) {
       console.log(error);
       return next(error);

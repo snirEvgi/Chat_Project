@@ -12,6 +12,7 @@
   min-height: 22rem;
   overflow-y: auto;
   padding: 10px;
+  color: #333;
 }
 
 .messageBubble {
@@ -31,7 +32,11 @@
   background-color: #f2f2f2;
   color: #333;
 }
-
+.typingIndicator {
+  color: #888; /* Adjust the color as needed */
+  font-style: italic;
+  margin-top: 5px;
+}
 .inputBox {
   display: flex;
   align-items: center;

@@ -1,9 +1,10 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 import { postNewMessage } from "./singleChatAPI";
 export interface IMessage{
-    senderId: string;
-    chatId: number;
+    name: string;
+    room: number;
     text: string;
+    time:string
 }
 
 export const sendMessage = createAsyncThunk(
@@ -13,6 +14,8 @@ export const sendMessage = createAsyncThunk(
         const response = await postNewMessage(message)
         return response
       } catch (error) {
+        console.log(error);
+        
         return rejectWithValue(error)
       }
     },

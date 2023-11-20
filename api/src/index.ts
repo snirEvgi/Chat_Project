@@ -12,6 +12,7 @@ import { messagesRouter } from "./messages";
 import { usersRouter } from "./users/route";
 
 // initDB();
+const ADMIN = "Admin"
 
 const app = express();
 app.use(cors());
@@ -44,79 +45,225 @@ const io = new Server(4300, {
 const usersMapping = {};
 let onlineUsers = [];
 
-io.on("connection", (socket) => {
-  // console.log("New connection opened with the Server: ", socket.id);
 
-  socket.on("client-login", (userName) => {
-    // usersMapping[socket.id] = userName;
-    // socket.broadcast.emit("new-user-logged-in", `${userName} has joined`);
-    // Send a connection message to the specific user
-    // socket.emit("message-from-server", {
-    //   user: "Server",
-    //   message: `You (${userName}) are now connected`,
-    // });
-    // Notify other users about the new user joining
-    // socket.broadcast.emit("new-user-logged-in", `${userName} has joined`);
-  });
 
-  // Listen to messages sent by the client
-  // socket.on("client-send-message", (message) => {
-  //   const user = usersMapping[socket.id] || socket.id;
-  //   const formattedMessage = { user, message };
-  //   console.log(message);
+// io.on("connection", (socket) => {
+//   // console.log("New connection opened with the Server: ", socket.id);
 
-  //   // Sending the formatted message to ALL clients
-  //   io.emit("message-from-server", formattedMessage);
-  // });
+//   socket.on("client-login", (userName) => {
+//     // usersMapping[socket.id] = userName;
+//     // socket.broadcast.emit("new-user-logged-in", `${userName} has joined`);
+//     // Send a connection message to the specific user
+//     // socket.emit("message-from-server", {
+//     //   user: "Server",
+//     //   message: `You (${userName}) are now connected`,
+//     // });
+//     // Notify other users about the new user joining
+//     // socket.broadcast.emit("new-user-logged-in", `${userName} has joined`);
+//   });
 
-  socket.on("add-new-user", (userId) => {
-    !onlineUsers.some((user) => user.userId === userId) &&
-      onlineUsers.push({
-        userId,
-        socketId: socket.id,
-      });
-    console.log(onlineUsers, "onlineUsers");
-    io.emit("getOnlineUsers", onlineUsers);
-  });
+//   // Listen to messages sent by the client
+//   // socket.on("client-send-message", (message) => {
+//   //   const user = usersMapping[socket.id] || socket.id;
+//   //   const formattedMessage = { user, message };
+//   //   console.log(message);
 
-  socket.on("joinRoom", (roomId) => {
-    socket.join(roomId);
-    console.log(`User ${socket.id} joined room ${roomId}`);
-  });
+//   //   // Sending the formatted message to ALL clients
+//   //   io.emit("message-from-server", formattedMessage);
+//   // });
 
-  socket.on("message", (data) => {
-    const sender = onlineUsers.find((user) => user.socketId === socket.id);
-    if (sender) {
-      const messageData = {
-        roomId: data.roomId,
-        message: data.message,
-        senderId: sender.userId, // Use userId instead of socket.id
-      };
-      console.log(
-        `Received message: ${data.message} from user ${sender.userId}`
-      );
-      io.to(data.roomId).emit("message", messageData);
+//   socket.on("add-new-user", (user) => {
+//     !onlineUsers.some((use) => use?.userId === user?.id) &&
+//       onlineUsers.push({
+//         userId:user?.id,
+//         socketId: socket?.id,
+//         userEmail:user?.email
+//       });
+//     console.log(onlineUsers, "onlineUsers");
+//     io.emit("getOnlineUsers", onlineUsers);
+//   });
 
-      // Save the message to the database here using your database logic
-      // Example: await saveMessageToDatabase(messageData);
-    }
-  });
+//   socket.on("joinRoom", (roomId) => {
+//     socket.join(roomId);
+//     console.log(`User ${socket.id} joined room ${roomId}`);
+//   });
 
-  socket.on("sendMessage", (message) => {
-    const user = onlineUsers.find((user) => user.userId === message.receiverId);
+//   socket.on("message", (data) => {
+//     const sender = onlineUsers.find((user) => user.socketId === socket.id);
+//     if (sender) {
+//       const messageData = {
+//         roomId: data.roomId,
+//         message: data.message,
+//         senderId: sender.userId, 
+//         userEmail:sender?.userEmail,
+//         time: new Intl.DateTimeFormat('default', {
+//           hour: 'numeric',
+//           minute: 'numeric',
+//           second: 'numeric'
+//       }).format(new Date())
+//       };
+//       console.log(
+//         `Received message: ${data.message} from user ${sender.userId}`
+//       );
+//       io.to(data.roomId).emit("message", messageData);
 
-    const messageData = {
-      text: message?.newMessage,
-      senderId: message?.email,
-    };
-    if (user) {
-      io.to(user.socketId).emit("getMessage", messageData);
-    }
-  });
+//       // Save the message to the database here using your database logic
+//       // Example: await saveMessageToDatabase(messageData);
+//     }
+//   });
 
-  socket.on("disconnect", () => {
-    onlineUsers = onlineUsers.filter((user) => user.socketId !== socket.id);
-    io.emit("getOnlineUsers", onlineUsers);
-    console.log("User disconnected:", socket.id);
-  });
-});
+//   socket.on("sendMessage", (message) => {
+//     const user = onlineUsers.find((user) => user.userId === message.receiverId);
+
+//     const messageData = {
+//       text: message?.newMessage,
+//       senderId: message?.email,
+//     };
+//     if (user) {
+//       io.to(user.socketId).emit("getMessage", messageData);
+//     }
+//   });
+
+//   socket.on("disconnect", () => {
+//     onlineUsers = onlineUsers.filter((user) => user.socketId !== socket.id);
+//     io.emit("getOnlineUsers", onlineUsers);
+//     console.log("User disconnected:", socket.id);
+//   });
+// });
+
+
+
+
+// state 
+
+
+
+const UsersState = {
+  users: [],
+  setUsers: function (newUsersArray) {
+      this.users = newUsersArray
+  }
+}
+
+io.on('connection', socket => {
+  console.log(`User ${socket.id} connected`)
+
+  // Upon connection - only to user 
+  socket.emit('message', buildMsg(ADMIN, "Welcome to Chat App!"))
+
+  socket.on('enterRoom', ({ name, room }) => {
+
+      // leave previous room 
+      const prevRoom = getUser(socket.id)?.room
+
+      if (prevRoom) {
+          socket.leave(prevRoom)
+          io.to(prevRoom).emit('message', buildMsg(ADMIN, `${name} has left the room`))
+      }
+
+      const user = activateUser(socket.id, name, room)
+
+      // Cannot update previous room users list until after the state update in activate user 
+      if (prevRoom) {
+          io.to(prevRoom).emit('userList', {
+              users: getUsersInRoom(prevRoom)
+          })
+      }
+
+      // join room 
+      socket.join(user.room)
+
+      // To user who joined 
+      socket.emit('message', buildMsg(ADMIN, `You have joined the ${user.room} chat room`))
+
+      // To everyone else 
+      socket.broadcast.to(user.room).emit('message', buildMsg(ADMIN, `${user.name} has joined the room`))
+
+      // Update user list for room 
+      io.to(user.room).emit('userList', {
+          users: getUsersInRoom(user.room)
+      })
+
+      // Update rooms list for everyone 
+      io.emit('roomList', {
+          rooms: getAllActiveRooms()
+      })
+  })
+
+  // When user disconnects - to all others 
+  socket.on('disconnect', () => {
+      const user = getUser(socket.id)
+      userLeavesApp(socket.id)
+
+      if (user) {
+          io.to(user.room).emit('message', buildMsg(ADMIN, `${user.name} has left the room`))
+
+          io.to(user.room).emit('userList', {
+              users: getUsersInRoom(user.room)
+          })
+
+          io.emit('roomList', {
+              rooms: getAllActiveRooms()
+          })
+      }
+
+      console.log(`User ${socket.id} disconnected`)
+  })
+
+  // Listening for a message event 
+  socket.on('message', ({ name, text }) => {
+      const room = getUser(socket.id)?.room
+      if (room) {
+          io.to(room).emit('message', buildMsg(name, text))
+      }
+  })
+
+  // Listen for activity 
+  socket.on('activity', (name) => {
+      const room = getUser(socket.id)?.room
+      
+      if (room) {
+          socket.broadcast.to(room).emit('activity', name)
+      }
+  })
+})
+
+function buildMsg(name, text) {
+  return {
+      name,
+      text,
+      time: new Intl.DateTimeFormat('default', {
+          hour: 'numeric',
+          minute: 'numeric',
+          second: 'numeric'
+      }).format(new Date())
+  }
+}
+
+// User functions 
+function activateUser(id, name, room) {
+  const user = { id, name, room }
+  UsersState.setUsers([
+      ...UsersState.users.filter(user => user.id !== id),
+      user
+  ])
+  return user
+}
+
+function userLeavesApp(id) {
+  UsersState.setUsers(
+      UsersState.users.filter(user => user.id !== id)
+  )
+}
+
+function getUser(id) {
+  return UsersState.users.find(user => user.id === id)
+}
+
+function getUsersInRoom(room) {
+  return UsersState.users.filter(user => user.room === room)
+}
+
+function getAllActiveRooms() {
+  return Array.from(new Set(UsersState.users.map(user => user.room)))
+}

@@ -1,157 +1,142 @@
 import React, { useState, useEffect, useRef } from "react"
-import { useAppDispatch, useAppSelector } from "../../../app/hooks"
 import { Socket, io } from "socket.io-client"
 import "./SingleChatComponent.css"
 import { sendMessage } from "./singleChatSlice"
-import { getMessages, getUser } from "./singleChatAPI"
+import { getMessages } from "./singleChatAPI"
+import { useAppDispatch } from "../../../app/hooks"
 
 function SingleChatComponent(props: any) {
   const dispatch = useAppDispatch()
-  const userData = JSON.parse(localStorage.getItem("userRecord") as any)
-  const userName = userData?.firstName + " " + userData?.lastName
+
   const [message, setMessage] = useState("")
-  const [newMessage, setNewMessage] = useState({})
-  const sender = userData?.email
   const [chatRows, setChatRows] = useState<any[]>([])
   const [socket, setSocket] = useState<Socket>()
   const [onlineUsers, setOnlineUsers] = useState([])
-  const [receiverData, setReceiverData] = useState([])
-  const [receiver, setReceiver] = useState<any>({})
+  const userData = JSON.parse(localStorage.getItem("userRecord") as any)
+  const sender = userData?.email
   const messagesRef = useRef<HTMLDivElement | null>(null)
+  const [isTyping, setIsTyping] = useState(false)
+  const [typingUser, setTypingUser] = useState("")
+
+  const handlerActivity = () => {
+    socket?.emit("activity", sender)
+    scrollToBottom()
+
+  }
+  const fetchChatHistory = async () => {
+    try {
+      const history = await getMessages(props.roomId)
+      setChatRows(history)
+    } catch (error) {
+      console.log(error)
+    }finally{
+      scrollToBottom()
+
+    }
+  }
+  useEffect(() => {
+    const initSocket = () => {
+      const newSocket = io("http://localhost:4300")
+
+      newSocket.emit("enterRoom", { name: sender, room: props.roomId })
+
+      newSocket.on("message", (data) => {
+        const prepMessage = {
+          name: data.name || sender,
+          text: data.text,
+          room: props.roomId,
+          time: data.time,
+        }
+
+        setChatRows((prevMessages) => {
+          return [...prevMessages, prepMessage]
+        })
+        scrollToBottom()
+        setMessage("")
+      })
+
+      setSocket(newSocket)
+    }
+    socket?.on("roomList", (data) => {
+      // Handle user list update if needed
+      console.log(data, "roomlist")
+    })
+    initSocket()
+    fetchChatHistory()
+    return () => {
+      socket?.off("message")
+      socket?.disconnect()
+    }
+  }, [props.roomId])
+
+  useEffect(() => {
+    socket?.on("userList", (data) => {
+      // Handle user list update if needed
+      setOnlineUsers(data.users)
+      console.log(data, "online")
+    })
+    socket?.on("activity", (data) => {
+      // Handle user list update if needed
+     console.log(data);
+     
+      setTypingUser(data);
+      setIsTyping(true);
+
+      setTimeout(() => {
+        setIsTyping(false);
+        setTypingUser("");
+      }, 3000);
+    })
+
+    // Cleanup function
+    return () => {
+      socket?.off("userList")
+      socket?.disconnect()
+    }
+  }, [socket])
 
   const scrollToBottom = () => {
     if (messagesRef.current) {
       messagesRef.current.scrollTop = messagesRef.current.scrollHeight
     }
   }
-  const receiverId = (
-    onlineUsers.find((data: any) => data.userId !== userData.id) as any
-  )?.userId
-
-  // console.log(receiverId)
-  // console.log(onlineUsers)
-  
-  const fetchChatHistory = async () => {
-    try {
-      const history = await getMessages(props.roomId)
-      // console.log(history, "this")
-      setChatRows(history)
-      scrollToBottom()
-    } catch (error) {
-      console.log(error)
-    }
-  }
-  
-  const fetchReceiverData = async () => {
-    try {
-      const rData= await getUser(receiverId)
-    setReceiverData(rData)
-    console.log(receiverData);
-    
-    } catch (error) {
-      console.log(error)
-    }
-  }
-  
-  useEffect(() => {
-    fetchChatHistory()
-  }, [])
-  useEffect(() => {
-    if (receiverId) {
-       fetchReceiverData()
-      // console.log(receiverData,"RERERERERE");
-      setReceiver(receiverData[0])
-     
-    }
-
-  }, [receiverId])
-  
-  useEffect(() => {
-    const newSocket = io("http://localhost:4300")
-    
-    // Join the chat room
-    newSocket.emit("joinRoom", props.roomId)
-    
-    // Listen for incoming messages
-    newSocket.on("message", (data) => {
-      console.log(data, "messagedATA")
-      
-      // setSender(data.senderId) 
-      const prepMessage = {
-        text:data?.message,
-        senderId:receiver?.email,
-        roomId:props?.roomId
-      }
-      setNewMessage(data?.message)
-      setMessage(data?.message)
-      
-      setChatRows((prevMessages) => {
-        return [...prevMessages, prepMessage]
-      })
-      setMessage("")
-    })
-    
-    setSocket(newSocket)
-
-    return () => {
-      newSocket.disconnect()
-    }
-  }, [props.roomId])
-  
-  useEffect(() => {
-    socket?.emit("add-new-user", userData?.id)
-    socket?.on("getOnlineUsers", (res) => {
-      setOnlineUsers(res)
-      // console.log(res);
-      
-    })
-    
-    return () => {
-      socket?.off("getOnlineUsers")
-    }
-  }, [socket])
-  
-  useEffect(() => {
-    socket?.emit("sendMessage", { newMessage:message, senderId:sender })
-  }, [newMessage])
-  
-  useEffect(() => {
-    socket?.on("getMessage", (res) => {
-      console.log(res, "the message")
-      
-      setChatRows((prevMessages) => {
-        return [...prevMessages, res]
-      })
-    })
-    
-    
-    return () => {
-      socket?.off("getMessage")
-    }
-  }, [socket])
 
   const handleSendMessage = async () => {
-
-
     if (socket && message.trim() !== "") {
-      socket.emit("message", {
-        roomId: props.roomId,
-        message: message,
-        senderId: sender,
-      })
-      const messagePack = {
-        senderId: sender,
-        chatId: props.roomId,
-        text: message,
-      }
       try {
-       
-        
+        socket.emit("message", {
+          name: sender,
+          text: message,
+          room: props.roomId,
+          time: new Intl.DateTimeFormat("default", {
+            hour: "numeric",
+            minute: "numeric",
+            second: "numeric",
+          }).format(new Date()),
+        })
+
+        const messagePack = {
+          name: sender,
+          room: Number(props.roomId),
+          text: message,
+          time: new Intl.DateTimeFormat("default", {
+            hour: "numeric",
+            minute: "numeric",
+            second: "numeric",
+          }).format(new Date()) as string,
+        }
+
         const response = await dispatch(sendMessage(messagePack))
-        fetchChatHistory()
+
+        // Log after successful send
+        console.log("Message sent successfully")
+
+        scrollToBottom()
       } catch (error) {
-        console.log(error)
+        // Log any errors
+        console.error("Error sending message:", error)
       } finally {
+        // Clear the message input
         setMessage("")
       }
     }
@@ -161,26 +146,24 @@ function SingleChatComponent(props: any) {
     <div className="chatBox">
       {props.chatOn ? (
         <>
-          {" "}
           <div className="chatHistory" ref={messagesRef}>
             {chatRows.map((row, index) => (
               <div
                 key={index}
                 className={`messageBubble ${
-                  row.senderId === sender ? "sentMessage" : "receivedMessage"
+                  row.name === sender ? "sentMessage" : "receivedMessage"
                 }`}
               >
-                <span className="messageUser">
-                  {row.senderId === sender
-                    ? "You"
-                    : userName
-                    ? row.senderId
-                    : "Unknown"}
-                  :
-                </span>{" "}
-                {row.text}
+                <span className="messageUser">{row.name === sender? "You":sender}:</span> {row.text}
+                <br />
+                <span style={{ position: "relative", left: "40.5rem" }}>
+                  {row.time}
+                </span>
               </div>
             ))}
+            {isTyping && (
+              <div className="typingIndicator">{typingUser} is typing...</div>
+            )}
           </div>
           <div className="inputBox">
             <input
@@ -189,6 +172,7 @@ function SingleChatComponent(props: any) {
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               onKeyDown={(e) => {
+                handlerActivity()
                 e.code === "Enter" && handleSendMessage()
               }}
             />

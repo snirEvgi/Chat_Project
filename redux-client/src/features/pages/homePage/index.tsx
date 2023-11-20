@@ -10,36 +10,51 @@ import Header from "../../UI-Components/header"
 // import SingleChatComponent from "../singleChat"
 import List from "../../UI-Components/list/list"
 
-import { fetchAllChats, fetchSingleChat } from "./mainAPI"
-// const { id, role, first_name, last_name } = userData
-// const userRole = role
+import {
+  createNewChatApi,
+  fetchAllChats,
+  fetchSingleChat,
+  getAllUsersApi,
+} from "./mainAPI"
+
 const HomePage = () => {
   const navigate = useNavigate()
   const [isChatOn, setIsChatOn] = useState<boolean>(false)
   const [chats, setChats] = useState<Array<any>>([])
-  const [chatId, setChatId] = useState<Array<any>>([])
+  const [users, setUsers] = useState<Array<any>>([])
+  const [selectedChatId, setSelectedChatId] = useState<number | null>(null)
 
   useEffect(() => {
     const fetchChatsData = async () => {
       try {
         const result = await fetchAllChats()
         setChats(result)
-        console.log(chats)
+        // console.log(chats)
       } catch (error) {
         console.error("Error fetching chats:", error)
       }
     }
     fetchChatsData()
-  }, [])
+    getAllUsers()
+  }, [isChatOn])
   useEffect(() => {
     document.title = `Home`
   }, [])
+  useEffect(() => {}, [])
 
-  const handleChatClick = () => {
-    //chatId:string
+  const getAllUsers = async () => {
+    try {
+      const result = await getAllUsersApi()
+      setUsers(result)
+      console.log(users)
+    } catch (error) {
+      console.error("Error fetching chats:", error)
+    }
+  }
+
+  const handleChatClick = (chatId: number) => {
+    setSelectedChatId((prevChatId) => (prevChatId === chatId ? null : chatId))
     setIsChatOn(!isChatOn)
-
-    // Example: navigate(`/chat/${chatId}`);
   }
 
   return (
@@ -50,7 +65,7 @@ const HomePage = () => {
 
       <div className="flexedContent">
         <div className="leftSideList">
-          <List chats={chats} onClick={handleChatClick} />
+          <List chats={chats} onClick={handleChatClick} users={users} />
         </div>
       </div>
     </div>
