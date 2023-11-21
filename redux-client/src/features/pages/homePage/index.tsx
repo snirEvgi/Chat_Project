@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import "./HomePage.css"
+import { Socket, io } from "socket.io-client"
 import { classNames } from "primereact/utils"
 import { userData } from "../../handlers/hashData"
 import { Rating } from "primereact/rating"
@@ -23,6 +24,7 @@ const HomePage = () => {
   const [chats, setChats] = useState<Array<any>>([])
   const [users, setUsers] = useState<Array<any>>([])
   const [selectedChatId, setSelectedChatId] = useState<number | null>(null)
+  const [onlineUsers, setOnlineUsers] = useState([])
 
   useEffect(() => {
     const fetchChatsData = async () => {
@@ -40,7 +42,6 @@ const HomePage = () => {
   useEffect(() => {
     document.title = `Home`
   }, [])
-  useEffect(() => {}, [])
 
   const getAllUsers = async () => {
     try {
@@ -65,7 +66,12 @@ const HomePage = () => {
 
       <div className="flexedContent">
         <div className="leftSideList">
-          <List chats={chats} onClick={handleChatClick} users={users} />
+          <List
+            chats={chats}
+            onClick={handleChatClick}
+            users={users}
+            setOnlineUsers={setOnlineUsers}
+          />
         </div>
       </div>
     </div>

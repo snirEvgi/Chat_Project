@@ -20,6 +20,7 @@ import { userData } from "./features/handlers/hashData"
 import SingleChatComponent from "./features/pages/singleChat"
 import Login from "./features/pages/login"
 import SignUp from "./features/pages/sign-up"
+import { Socket, io } from "socket.io-client"
 
 // const { id, role, first_name } = userData
 
@@ -84,16 +85,44 @@ function App() {
 }
 function Navbar() {
   const token = localStorage.getItem("token")
+  const userRecord = JSON.parse(localStorage.getItem("userRecord") as any)
+  const [onlineUsers, setOnlineUsers] = useState([])
 
+  const [socket, setSocket] = useState<Socket>()
+
+  useEffect(() => {
+    if (token) {
+      const newSocket = io("http://localhost:4300")
+      setSocket(newSocket)
+
+      socket?.emit("user-logged-in", userRecord)
+
+      return () => {
+        socket?.disconnect()
+      }
+    }
+  }, [token !== null])
+
+  useEffect(() => {
+    socket?.on("getOnlineUsers", (data) => {
+      console.log(data)
+
+      setOnlineUsers(data)
+    })
+  }, [socket])
+
+  console.log(onlineUsers)
   const navigate = useNavigate()
   const handleNavigation = async () => {
     navigate("/home")
   }
   const handleLogout = async () => {
+    socket?.emit("user-logged-out", userRecord)
     localStorage.removeItem("token")
     localStorage.removeItem("userRecord")
     localStorage.removeItem("exp")
     window.location.href = "/home"
+    socket?.disconnect()
   }
 
   return (

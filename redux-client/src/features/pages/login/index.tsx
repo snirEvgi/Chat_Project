@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react"
+import React, { useState, useRef, useEffect } from "react"
 import { loginUser } from "./loginSlice"
 import { useAppDispatch } from "../../../app/hooks"
 import { InputText } from "primereact/inputtext"
@@ -8,8 +8,8 @@ import { Toast } from "primereact/toast"
 import { Link, useNavigate } from "react-router-dom"
 import { z, ZodError } from "zod"
 import "./login.css"
-import { encryptData } from "../../handlers/hashData"
-import { io } from "socket.io-client"
+import { encryptData, userData } from "../../handlers/hashData"
+import { Socket, io } from "socket.io-client"
 // Define Zod schema for login form
 const loginSchema = z.object({
   email: z.string().email(),
@@ -87,9 +87,7 @@ function Login() {
 
         const role = userRecord?.role
 
-    
-          navigate("/home")
-        
+        navigate("/home")
       } else {
         handleLoginError(response?.payload)
       }

@@ -12,6 +12,8 @@ const List = (props: any) => {
   const [isChatOn, setIsChatOn] = useState<boolean>(true)
   const [currentUser, setCurrentUser] = useState<any>({})
   const [chats, setChats] = useState<Array<any>>(props.chats)
+  const [onlineUsers, setOnlineUsers] = useState([])
+  console.log(onlineUsers, "working")
 
   const userData = JSON.parse(localStorage.getItem("userRecord") as any)
 
@@ -64,18 +66,14 @@ const List = (props: any) => {
           </div>
         )}
         <ScrollPanel style={{ height: "20rem" }}>
-          <ul
-            onClick={props.onClick}
-            className="p-list p-list-bordered chatList"
-          >
+          <ul className="p-list p-list-bordered chatList">
             {props.chats.map((chat: any) => (
-              <li key={chat.chatId} className="p-list-item chatItem">
-                <span
-                  onClick={() => {
-                    chatHandler(chat.chatId)
-                  }}
-                  className="chatName"
-                >{`${chat.firstUserName} & ${chat.secondUserName}`}</span>
+              <li
+                key={chat.chatId}
+                className="p-list-item chatItem"
+                onClick={() => chatHandler(chat.chatId)}
+              >
+                <span className="chatName">{`${chat.firstUserName} & ${chat.secondUserName}`}</span>
               </li>
             ))}
           </ul>
@@ -86,6 +84,7 @@ const List = (props: any) => {
           <SingleChatComponent
             chatOn={true}
             roomId={selectedChatId}
+            setOnlineUsers={setOnlineUsers}
           ></SingleChatComponent>
         </div>
       )}

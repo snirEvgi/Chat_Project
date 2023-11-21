@@ -12,6 +12,8 @@ function SingleChatComponent(props: any) {
   const [chatRows, setChatRows] = useState<any[]>([])
   const [socket, setSocket] = useState<Socket>()
   const [onlineUsers, setOnlineUsers] = useState([])
+  console.log(onlineUsers, "single chat OU")
+
   const userData = JSON.parse(localStorage.getItem("userRecord") as any)
   const sender = userData?.email
   const messagesRef = useRef<HTMLDivElement | null>(null)
@@ -21,7 +23,6 @@ function SingleChatComponent(props: any) {
   const handlerActivity = () => {
     socket?.emit("activity", sender)
     scrollToBottom()
-
   }
   const fetchChatHistory = async () => {
     try {
@@ -29,11 +30,11 @@ function SingleChatComponent(props: any) {
       setChatRows(history)
     } catch (error) {
       console.log(error)
-    }finally{
+    } finally {
       scrollToBottom()
-
     }
   }
+  
   useEffect(() => {
     const initSocket = () => {
       const newSocket = io("http://localhost:4300")
@@ -73,19 +74,20 @@ function SingleChatComponent(props: any) {
     socket?.on("userList", (data) => {
       // Handle user list update if needed
       setOnlineUsers(data.users)
+      props.setOnlineUsers(data.users)
       console.log(data, "online")
     })
     socket?.on("activity", (data) => {
       // Handle user list update if needed
-     console.log(data);
-     
-      setTypingUser(data);
-      setIsTyping(true);
+      console.log(data)
+
+      setTypingUser(data)
+      setIsTyping(true)
 
       setTimeout(() => {
-        setIsTyping(false);
-        setTypingUser("");
-      }, 3000);
+        setIsTyping(false)
+        setTypingUser("")
+      }, 3000)
     })
 
     // Cleanup function
@@ -154,7 +156,10 @@ function SingleChatComponent(props: any) {
                   row.name === sender ? "sentMessage" : "receivedMessage"
                 }`}
               >
-                <span className="messageUser">{row.name === sender? "You":sender}:</span> {row.text}
+                <span className="messageUser">
+                  {row.name === sender ? "You" : sender}:
+                </span>{" "}
+                {row.text}
                 <br />
                 <span style={{ position: "relative", left: "40.5rem" }}>
                   {row.time}
