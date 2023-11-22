@@ -61,6 +61,34 @@ const routes: Array<IRoute> = [
 function App() {
   const { scrollYProgress } = useScroll()
   const token = localStorage.getItem("token")
+  const [onlineUsers, setOnlineUsers] = useState([])
+  const userRecord = JSON.parse(localStorage.getItem("userRecord") as any)
+
+  const [socket, setSocket] = useState<Socket>()
+  useEffect(() => {
+    if (token) {
+      const newSocket = io("http://localhost:4300")
+      setSocket(newSocket)
+
+      newSocket.on("connect", () => {
+        newSocket.emit("user-logged-in", userRecord)
+      })
+
+      return () => {
+        newSocket.disconnect()
+      }
+    }
+  }, [])
+
+  useEffect(() => {
+    if (token) {
+      socket?.on("getOnlineUsers", (data) => {
+        setOnlineUsers(data.onlineUsers)
+        localStorage.setItem("onlineUsers", JSON.stringify(onlineUsers))
+        console.log(onlineUsers)
+      })
+    }
+  }, [])
 
   return (
     <Router>
@@ -95,23 +123,27 @@ function Navbar() {
       const newSocket = io("http://localhost:4300")
       setSocket(newSocket)
 
-      socket?.emit("user-logged-in", userRecord)
+      newSocket.on("connect", () => {
+        newSocket.emit("user-logged-in", userRecord)
+      })
 
       return () => {
-        socket?.disconnect()
+        newSocket.disconnect()
       }
     }
-  }, [token !== null])
+  }, [token, token !== undefined])
 
   useEffect(() => {
-    socket?.on("getOnlineUsers", (data) => {
-      console.log(data)
-
-      setOnlineUsers(data)
-    })
+    if (socket) {
+      socket.on("getOnlineUsers", (data) => {
+        console.log(data)
+        setOnlineUsers(data.onlineUsers)
+      })
+    }
   }, [socket])
 
   console.log(onlineUsers)
+  localStorage.setItem("onlineUsers", JSON.stringify(onlineUsers))
   const navigate = useNavigate()
   const handleNavigation = async () => {
     navigate("/home")
@@ -121,6 +153,7 @@ function Navbar() {
     localStorage.removeItem("token")
     localStorage.removeItem("userRecord")
     localStorage.removeItem("exp")
+    localStorage.removeItem("onlineUsers")
     window.location.href = "/home"
     socket?.disconnect()
   }

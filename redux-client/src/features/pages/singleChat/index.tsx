@@ -12,16 +12,16 @@ function SingleChatComponent(props: any) {
   const [chatRows, setChatRows] = useState<any[]>([])
   const [socket, setSocket] = useState<Socket>()
   const [onlineUsers, setOnlineUsers] = useState([])
-  console.log(onlineUsers, "single chat OU")
-
+  // console.log(onlineUsers, "single chat OU")
   const userData = JSON.parse(localStorage.getItem("userRecord") as any)
+  const userName = `${userData?.firstName} ${userData?.lastName}`
   const sender = userData?.email
   const messagesRef = useRef<HTMLDivElement | null>(null)
   const [isTyping, setIsTyping] = useState(false)
   const [typingUser, setTypingUser] = useState("")
 
   const handlerActivity = () => {
-    socket?.emit("activity", sender)
+    socket?.emit("activity", userName)
     scrollToBottom()
   }
   const fetchChatHistory = async () => {
@@ -39,11 +39,11 @@ function SingleChatComponent(props: any) {
     const initSocket = () => {
       const newSocket = io("http://localhost:4300")
 
-      newSocket.emit("enterRoom", { name: sender, room: props.roomId })
+      newSocket.emit("enterRoom", { name: userName, room: props.roomId })
 
       newSocket.on("message", (data) => {
         const prepMessage = {
-          name: data.name || sender,
+          name: data.name || userName,
           text: data.text,
           room: props.roomId,
           time: data.time,
@@ -74,7 +74,6 @@ function SingleChatComponent(props: any) {
     socket?.on("userList", (data) => {
       // Handle user list update if needed
       setOnlineUsers(data.users)
-      props.setOnlineUsers(data.users)
       console.log(data, "online")
     })
     socket?.on("activity", (data) => {

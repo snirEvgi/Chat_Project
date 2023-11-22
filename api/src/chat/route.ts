@@ -2,14 +2,30 @@ import express, { Request, Response, NextFunction } from "express";
 import { getChatApi } from "./handlers/getChat";
 import { createNewChatApi } from "./handlers/createChat";
 import { getAllChatsApi } from "./handlers/getAllChats";
+import { getChatsById } from "./handlers/getChatsById";
 
 const chatRouter = express.Router();
+
 
 chatRouter.get(
   "/",
   async function (req: Request, res: Response, next: NextFunction) {
     try {
       const result = await getAllChatsApi();
+      if (!result) throw new Error("No Chats Found");
+      res.json(result);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+);
+chatRouter.get(
+  "/cid",
+  async function (req: Request, res: Response, next: NextFunction) {
+    try {
+      const fid = req.query.fid
+      // const sid = req.query.sid
+      const result = await getChatsById(Number(fid) as number);//,Number(sid) as number
       if (!result) throw new Error("No Chats Found");
       res.json(result);
     } catch (error) {

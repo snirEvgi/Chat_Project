@@ -14,29 +14,32 @@ import List from "../../UI-Components/list/list"
 import {
   createNewChatApi,
   fetchAllChats,
+  fetchChatsById,
   fetchSingleChat,
   getAllUsersApi,
 } from "./mainAPI"
 
-const HomePage = () => {
+const HomePage = (props: any) => {
   const navigate = useNavigate()
   const [isChatOn, setIsChatOn] = useState<boolean>(false)
-  const [chats, setChats] = useState<Array<any>>([])
   const [users, setUsers] = useState<Array<any>>([])
+  const [chats, setChats] = useState<Array<any>>([])
   const [selectedChatId, setSelectedChatId] = useState<number | null>(null)
   const [onlineUsers, setOnlineUsers] = useState([])
+  const userRecord = JSON.parse(localStorage.getItem("userRecord") as any)
 
-  useEffect(() => {
-    const fetchChatsData = async () => {
-      try {
-        const result = await fetchAllChats()
-        setChats(result)
-        // console.log(chats)
-      } catch (error) {
-        console.error("Error fetching chats:", error)
-      }
+  const fetchChatsData = async (fid: number) => {
+    try {
+      const result = await fetchChatsById(fid)
+      if (!result) return
+      setChats(result)
+    } catch (error) {
+      console.error("Error fetching chats:", error)
     }
-    fetchChatsData()
+  }
+  useEffect(() => {
+    fetchChatsData(userRecord?.id)
+
     getAllUsers()
   }, [isChatOn])
   useEffect(() => {
@@ -66,12 +69,7 @@ const HomePage = () => {
 
       <div className="flexedContent">
         <div className="leftSideList">
-          <List
-            chats={chats}
-            onClick={handleChatClick}
-            users={users}
-            setOnlineUsers={setOnlineUsers}
-          />
+          <List chats={chats} onClick={handleChatClick} users={users} />
         </div>
       </div>
     </div>

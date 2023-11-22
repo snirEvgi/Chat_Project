@@ -13,6 +13,12 @@ async function fetchAllChats(): Promise<any> {
     return result.data
   } catch (error) {}
 }
+async function fetchChatsById(fid: number): Promise<any> {
+  try {
+    const result = await axios.get(`${url}/chat/cid?fid=${fid}`) //&sid=${sid}
+    return result.data
+  } catch (error) {}
+}
 
 async function fetchSingleChat(chatId: string): Promise<any> {
   try {
@@ -26,9 +32,11 @@ async function fetchAllMessages(): Promise<any> {
     return result.data
   } catch (error) {}
 }
-async function createNewChatApi(chat :IChat): Promise<any> {
+async function createNewChatApi(chat: IChat): Promise<any> {
+  console.log(chat)
+
   try {
-    const result = await axios.post(`${url}/chat/new`,chat)
+    const result = await axios.post(`${url}/chat/new`, chat)
     return result.data
   } catch (error) {}
 }
@@ -39,5 +47,11 @@ async function getAllUsersApi(): Promise<any> {
   } catch (error) {}
 }
 
-
-export { fetchAllChats, fetchSingleChat, fetchAllMessages, createNewChatApi,getAllUsersApi }
+export {
+  fetchAllChats,
+  fetchSingleChat,
+  fetchAllMessages,
+  createNewChatApi,
+  getAllUsersApi,
+  fetchChatsById,
+}

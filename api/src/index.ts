@@ -183,17 +183,23 @@ io.on("connection", (socket) => {
     io.to(user.room).emit("userList", {
       users: getUsersInRoom(user.room),
     });
-
+    if (onlineUsers) {
+      io.emit("getOnlineUsers", {
+        onlineUsers: onlineUsers,
+      });
+    }
     // Update rooms list for everyone
     io.emit("roomList", {
       rooms: getAllActiveRooms(),
     });
+
   });
 
   socket.on("user-logged-in", (userData) => {
     const user = onlineUsers.find((user) => user.id === userData?.id);
     if (user) return;
     onlineUsers.push(userData);
+    
     io.emit("getOnlineUsers", {
       onlineUsers: onlineUsers,
     });
@@ -204,6 +210,10 @@ io.on("connection", (socket) => {
       (user) => user.id !== userData?.id
     );
     onlineUsers = afterLogOutUsers;
+    io.emit("getOnlineUsers", {
+      onlineUsers: onlineUsers,
+    });
+    
   });
 
   // When user disconnects - to all others
