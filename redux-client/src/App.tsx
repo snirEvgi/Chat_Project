@@ -114,7 +114,6 @@ function App() {
 function Navbar() {
   const token = localStorage.getItem("token")
   const userRecord = JSON.parse(localStorage.getItem("userRecord") as any)
-  const [onlineUsers, setOnlineUsers] = useState([])
 
   const [socket, setSocket] = useState<Socket>()
 
@@ -133,17 +132,12 @@ function Navbar() {
     }
   }, [token, token !== undefined])
 
-  useEffect(() => {
-    if (socket) {
-      socket.on("getOnlineUsers", (data) => {
-        console.log(data)
-        setOnlineUsers(data.onlineUsers)
-      })
-    }
-  }, [socket])
+  if (token) {
+    socket?.on("getOnlineUsers", (data) => {
+      localStorage.setItem("onlineUsers", JSON.stringify(data.onlineUsers))
+    })
+  }
 
-  console.log(onlineUsers)
-  localStorage.setItem("onlineUsers", JSON.stringify(onlineUsers))
   const navigate = useNavigate()
   const handleNavigation = async () => {
     navigate("/home")

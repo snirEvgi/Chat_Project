@@ -14,18 +14,13 @@ import { Socket, io } from "socket.io-client"
 const List = (props: any) => {
   const [selectedChatId, setSelectedChatId] = useState<number | null>(null)
   const [isOn, setIsOn] = useState<boolean>(false)
-  const [isChatOn, setIsChatOn] = useState<boolean>(true)
-  const [currentUser, setCurrentUser] = useState<any>({})
   const [chats, setChats] = useState<Array<any>>([])
   const userData = JSON.parse(localStorage.getItem("userRecord") as any)
   const token = localStorage.getItem("token")
   const [socket, setSocket] = useState<Socket>()
   const userName = `${userData?.firstName} ${userData?.lastName}`
-  const [onlineUsersFromServer, setOnlineUsersFromServer] = useState([])
-  const onlineUsers = JSON.parse(localStorage.getItem("onlineUsers") as any)
-  const [onlineUsersFromServerFlag, setOnlineUsersFromServerFlag] = useState<
-    Array<boolean>
-  >([])
+  const onlineUsers =
+    JSON.parse(localStorage.getItem("onlineUsers") as any) || []
 
   const usersData = props.users.filter((user: any) => {
     return user?.id !== userData?.id
@@ -33,6 +28,7 @@ const List = (props: any) => {
   const isUserOnline = usersData.map((user: any) =>
     onlineUsers.some((onlineUser: any) => onlineUser?.id === user?.id),
   )
+
   // isUserOnline DATA
 
   //
@@ -63,19 +59,7 @@ const List = (props: any) => {
       }
     }
   }, [token, token !== undefined])
-  useEffect(() => {
-    if (socket) {
-      socket.on("getOnlineUsers", (data) => {
-        // console.log(data, "dataFroMaAPPPPP");
-        setOnlineUsersFromServer(data.onlineUsers)
-      })
-      setOnlineUsersFromServerFlag(isUserOnline)
 
-      // console.log(onlineUsersFromServerFlag)
-    }
-  }, [socket])
-
-  // console.log(dataForChat, "this dataaaaaaaa")
   const createNewChat = async (chat: IChat) => {
     try {
       if (!chat) return
@@ -118,9 +102,7 @@ const List = (props: any) => {
                     <li key={user.id} className="p-list-item chatItem">
                       <span className="chatName">
                         {` ${user.firstName} ${user.lastName}`}{" "}
-                        {onlineUsersFromServerFlag[index]
-                          ? "Online"
-                          : "Offline"}
+                        {isUserOnline[index] ? "Online" : "Offline"}
                       </span>
                     </li>
                   </div>
