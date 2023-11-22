@@ -25,13 +25,18 @@ const List = (props: any) => {
   const usersData = props.users.filter((user: any) => {
     return user?.id !== userData?.id
   })
+
+  const filteredUsersData = usersData.filter((user:any) => {
+    return !chats.some((cUser:any) => cUser?.secondUserId === user?.id);
+  });
+  
+
+  
   const isUserOnline = usersData.map((user: any) =>
     onlineUsers.some((onlineUser: any) => onlineUser?.id === user?.id),
   )
+ 
 
-  // isUserOnline DATA
-
-  //
   const chatHandler = (chatId: number) => {
     setSelectedChatId((prevChatId) => (prevChatId === chatId ? null : chatId))
   }
@@ -40,10 +45,11 @@ const List = (props: any) => {
     const result = await fetchChatsById(userData?.id)
     setChats(result)
   }
+ 
 
   useEffect(() => {
     fetchChats()
-  }, [])
+    }, [])
 
   useEffect(() => {
     if (token) {
@@ -78,7 +84,7 @@ const List = (props: any) => {
     }
     await createNewChat(dataForChat as IChat)
     await fetchChats()
-  }
+   }
 
   return (
     <div className="list-container">
@@ -94,7 +100,7 @@ const List = (props: any) => {
           <div className="addChatForm">
             <ScrollPanel style={{ height: "10rem" }}>
               <ul className="p-list p-list-bordered chatList">
-                {usersData.map((user: any, index: number) => (
+                {filteredUsersData.map((user: any, index: number) => (
                   <div
                     key={user?.email}
                     onClick={() => createNewChatHandler(user)}
