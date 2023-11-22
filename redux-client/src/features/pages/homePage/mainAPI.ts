@@ -19,6 +19,12 @@ async function fetchChatsById(fid: number): Promise<any> {
     return result.data
   } catch (error) {}
 }
+async function fetchChatsBySecondId(sid: number): Promise<any> {
+  try {
+    const result = await axios.get(`${url}/chat/cidSecond?sid=${sid}`) //&sid=${sid}
+    return result.data
+  } catch (error) {}
+}
 
 async function fetchSingleChat(chatId: string): Promise<any> {
   try {
@@ -54,4 +60,5 @@ export {
   createNewChatApi,
   getAllUsersApi,
   fetchChatsById,
+  fetchChatsBySecondId
 }

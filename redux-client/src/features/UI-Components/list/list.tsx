@@ -8,6 +8,7 @@ import {
   IChat,
   createNewChatApi,
   fetchChatsById,
+  fetchChatsBySecondId,
 } from "../../pages/homePage/mainAPI"
 import { Socket, io } from "socket.io-client"
 
@@ -43,7 +44,11 @@ const List = (props: any) => {
 
   const fetchChats = async () => {
     const result = await fetchChatsById(userData?.id)
-    setChats(result)
+    const result2 = await fetchChatsBySecondId(userData?.id)
+    const result3 = [...result,...result2]
+    console.log(result3);
+    
+    setChats(result3)
   }
  
 

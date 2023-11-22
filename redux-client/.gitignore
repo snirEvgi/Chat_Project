@@ -9,6 +9,7 @@ lerna-debug.log*
 
 # Dependencies
 node_modules
+*node_modules
 .yarn/*
 !.yarn/patches
 !.yarn/plugins
@@ -28,3 +29,4 @@ build
 
 # Miscellaneous
 *.local
+

@@ -6,5 +6,11 @@ async function getChatsById(fid:number) {
   const [data] = results;
   return data;
 }
+async function getChatsBySecondId(sid:number) {
+  const query = `SELECT * FROM chat.chats WHERE secondUserId = ? `;
+  const results = await pool.execute(query, [sid] );
+  const [data] = results;
+  return data;
+}
 
-export { getChatsById };
+export { getChatsById ,getChatsBySecondId };
