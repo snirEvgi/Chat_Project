@@ -18,6 +18,7 @@ function SingleChatComponent(props: any) {
   const [isTyping, setIsTyping] = useState(false)
   const [typingUser, setTypingUser] = useState("")
   const onlineUsersGlobal = localStorage.getItem("onlineUsers")
+
   const handlerActivity = () => {
     socket?.emit("activity", userName)
     scrollToBottom()
@@ -96,7 +97,7 @@ function SingleChatComponent(props: any) {
 
   const scrollToBottom = () => {
     if (messagesRef.current) {
-      messagesRef.current.scrollTop = messagesRef.current.scrollHeight
+      messagesRef.current.scrollTop= messagesRef.current.scrollHeight
     }
   }
 
@@ -143,23 +144,35 @@ function SingleChatComponent(props: any) {
 
   return (
     <div className="p-4  max-h-[700px] min-h-[700px]  relative ml-72">
-      <div className="  bg-gray-900 p-2 w-5/6 max-h-[600px] min-h-[600px]overflow-y-auto overflow-x-hidden rounded-2xl">
-      {/* <br /> */}
+        <div
+          className=" fixed border-y 
+           bg-gray-900 border-gray-900 flex justify-between items-center
+            h-12 max-w-full w-[400px] rounded-2xl  px-3 text-white top-6 "
+        >
+        <ul className="hidden md:flex">
+          <li className="p-4">Call</li>
+          <li className="p-4">Video</li>
+          <li className="p-4">Pin to top</li>
+        </ul>
+      </div>
+      <div className="  bg-gray-900 p-2 w-5/6 h-[600px] max-h-[600px] min-h-[600px]overflow-y-auto overflow-x-hidden rounded-2xl">
+        {/* <br /> */}
         {props.chatOn ? (
           <>
-              <div className=" fixed border-y  bg-gray-900 border-gray-900 flex justify-between items-center h-12 max-w-full  px-3 text-white mb-20"> chat Header</div>
             <div className="max-w-[480px]" ref={messagesRef}>
               {chatRows.map((row, index) => (
                 <div
-                key={index}
-                className={` break-words p-2 rounded-xl m-2 ${
-                  row.name === sender ? "bg-teal-700" : "bg-white text-black relative left-[600px]"
-                }`}
+                  key={index}
+                  className={` break-words p-2 rounded-xl m-2 ${
+                    row.name === sender
+                      ? "bg-teal-700"
+                      : "bg-white text-black relative left-[600px]"
+                  }`}
                 >
                   <div className="text-center w-full border-b border-gray-900 p-0 m-0 mb-2 text-lg">
                     {row.name === sender ? "You" : sender}
                   </div>
-                  <br /> 
+                  <br />
                   <div className="p-1 mb-1">{row.text}</div>
                   <br />
                   <span className=" p-1 text-right text-xs">{row.time}</span>
