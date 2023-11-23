@@ -94,11 +94,16 @@ const List = (props: any) => {
       <div className="flex flex-row h-screen w-1/6 bg-gray-900 absolute top-12 left-0">
         <ul className="list-none mt-4 w-full overflow-y-auto p-2">
 
-          <li   className=" mb-2 p-3  bg-gray-800 rounded-2xl">
+          <li   className=" mb-2 p-3  bg-gray-800 rounded-2xl ">
 
          <span onClick={() => {
             setIsOn(!isOn)
-          }} className="cursor-pointer border-[2px] hover:bg-gray-600 border-teal-400 rounded-3xl font-bold p-2 text-teal-400">  +{" "}</span>
+          }} className="cursor-pointer mx-2 border-[2px] hover:bg-gray-600 border-teal-400 rounded-3xl font-bold p-2 text-teal-400">  
+          <i className="pi pi-plus"></i></span>
+         <span onClick={() => {
+            setIsOn(!isOn)
+          }} className="cursor-pointer mx-2 border-[2px] hover:bg-gray-600 border-teal-400 rounded-3xl font-bold p-2 text-teal-400">  
+          <i className="pi pi-users"></i></span>
         </li>
         <div > 
 
