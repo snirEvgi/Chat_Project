@@ -9,6 +9,7 @@ function SingleChatComponent(props: any) {
   const dispatch = useAppDispatch()
 
   const [message, setMessage] = useState("")
+  const [onlineUserInRoomData, setOnlineUserInRoomData] = useState<Array<any>>([])
   const [chatRows, setChatRows] = useState<any[]>([])
   const [socket, setSocket] = useState<Socket>()
   const userData = JSON.parse(localStorage.getItem("userRecord") as any)
@@ -42,24 +43,25 @@ function SingleChatComponent(props: any) {
 
       newSocket.on("message", (data) => {
         const prepMessage = {
-          name: data.name || userName,
-          text: data.text,
-          room: props.roomId,
-          time: data.time,
+          name: data?.name,
+          text: data?.text,
+          room: props?.roomId,
+          time: data?.time,
         }
-
+        
         setChatRows((prevMessages) => {
-          return [...prevMessages, prepMessage]
+          return [...prevMessages, ...[prepMessage]]
         })
         scrollToBottom()
         setMessage("")
       })
-
+      
       setSocket(newSocket)
     }
     socket?.on("roomList", (data) => {
       // Handle user list update if needed
       console.log(data, "roomlist")
+
     })
     initSocket()
     fetchChatHistory()
@@ -68,13 +70,13 @@ function SingleChatComponent(props: any) {
       socket?.disconnect()
     }
   }, [props.roomId])
-
   useEffect(() => {
-    socket?.on("userList", (data) => {
-      // Handle user list update if needed
-      // setOnlineUsers(data.users)
-      console.log(data, "online")
-    })
+      socket?.on("userList", (data) => {
+        console.log(data, "online")
+        setOnlineUserInRoomData(data)
+        console.log(onlineUserInRoomData,"dataForMessage");
+      })
+    
     socket?.on("activity", (data) => {
       // Handle user list update if needed
       console.log(data)
@@ -105,7 +107,7 @@ function SingleChatComponent(props: any) {
     if (socket && message.trim() !== "") {
       try {
         socket.emit("message", {
-          name: sender,
+          name: userName,
           text: message,
           room: props.roomId,
           time: new Intl.DateTimeFormat("default", {
@@ -116,7 +118,7 @@ function SingleChatComponent(props: any) {
         })
 
         const messagePack = {
-          name: sender,
+          name: userName,
           room: Number(props.roomId),
           text: message,
           time: new Intl.DateTimeFormat("default", {
@@ -125,6 +127,8 @@ function SingleChatComponent(props: any) {
             second: "numeric",
           }).format(new Date()) as string,
         }
+        console.log(messagePack,"messagePack");
+        
 
         const response = await dispatch(sendMessage(messagePack))
 
@@ -147,9 +151,9 @@ function SingleChatComponent(props: any) {
         <div
           className=" fixed border-y 
            bg-gray-900 border-gray-900 flex justify-between items-center
-            h-16 max-w-full w-[66.5%] rounded-2xl  px-3 text-white top-18 border"
+            h-16 max-w-full w-[66.5%] rounded-2xl  px-3 text-white top-16 border"
         >
-        <ul className="hidden md:flex">
+        <ul className="md:flex">
           <li className="p-4">Call</li>
           <li className="p-4">Video</li>
           <li className="p-4">Pin to top</li>
@@ -164,13 +168,13 @@ function SingleChatComponent(props: any) {
                 <div
                   key={index}
                   className={` break-words p-2 rounded-xl m-2 ${
-                    row.name === sender
+                    row.name === userName
                       ? "bg-teal-700"
                       : "bg-white text-black relative left-[600px]"
                   }`}
                 >
                   <div className="text-center w-full border-b border-gray-900 p-0 m-0 mb-2 text-lg">
-                    {row.name === sender ? "You" : sender}
+                    {row.name === userName ? "You" : row.name}
                   </div>
                   <br />
                   <div className="p-1 mb-1">{row.text}</div>
