@@ -62,13 +62,9 @@ const HomePage = (props: any) => {
   }
 
   return (
-    <div className="homePageDiv">
-      <div className="chatHeader">
-        <Header title="This is header" />
-      </div>
-
-      <div className="flexedContent">
-        <div className="leftSideList">
+    <div className=" overflow-y-hidden">
+      <div className="">
+        <div className="overflow-y-hidden">
           <List chats={chats} onClick={handleChatClick} users={users} />
         </div>
       </div>

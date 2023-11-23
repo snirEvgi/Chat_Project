@@ -21,17 +21,18 @@ import SingleChatComponent from "./features/pages/singleChat"
 import Login from "./features/pages/login"
 import SignUp from "./features/pages/sign-up"
 import { Socket, io } from "socket.io-client"
+import Navbar from "./features/UI-Components/navbar"
 
 // const { id, role, first_name } = userData
 
-interface IRoute {
+export interface IRoute {
   path: string
   key: string
   component: any
   label?: string
   onlyAdmin?: boolean
 }
-const routes: Array<IRoute> = [
+export const routes: Array<IRoute> = [
   {
     path: "/home",
     component: (
@@ -92,9 +93,9 @@ function App() {
 
   return (
     <Router>
-      <Navbar />
-      <m.div className="progressBar" style={{ scaleX: scrollYProgress }} />
-      <div className="pageContent">
+      <Navbar  />
+      {/* <m.div className="progressBar" style={{ scaleX: scrollYProgress }} /> */}
+      <div>
         <Routes>
           {routes.map(
             (route) =>
@@ -111,90 +112,7 @@ function App() {
     </Router>
   )
 }
-function Navbar() {
-  const token = localStorage.getItem("token")
-  const userRecord = JSON.parse(localStorage.getItem("userRecord") as any)
 
-  const [socket, setSocket] = useState<Socket>()
-
-  useEffect(() => {
-    if (token) {
-      const newSocket = io("http://localhost:4300")
-      setSocket(newSocket)
-
-      newSocket.on("connect", () => {
-        newSocket.emit("user-logged-in", userRecord)
-      })
-
-      return () => {
-        newSocket.disconnect()
-      }
-    }
-  }, [token, token !== undefined])
-
-  if (token) {
-    socket?.on("getOnlineUsers", (data) => {
-      localStorage.setItem("onlineUsers", JSON.stringify(data.onlineUsers))
-    })
-  }
-
-  const navigate = useNavigate()
-  const handleNavigation = async () => {
-    navigate("/home")
-  }
-  const handleLogout = async () => {
-    socket?.emit("user-logged-out", userRecord)
-    localStorage.removeItem("token")
-    localStorage.removeItem("userRecord")
-    localStorage.removeItem("exp")
-    localStorage.removeItem("onlineUsers")
-    window.location.href = "/home"
-    socket?.disconnect()
-  }
-
-  return (
-    <nav className="navbar">
-      <div className="logo">
-        <span className="navbarBrand" onClick={handleNavigation}>
-          ChatChapati
-        </span>
-        <img
-          className="logoImage"
-          onClick={handleNavigation}
-          src={``}
-          alt="Chat"
-        />
-      </div>
-      <ul className="navLinks">
-        {routes.map(
-          (route) =>
-            showRoutesPerRole(route) && (
-              <li key={route.path}>
-                <Link to={route.path} className="navLink">
-                  {route.label}
-                </Link>
-              </li>
-            ),
-        )}
-      </ul>
-      <div></div>
-      <br />
-      <br />
-
-      <div className="topFn">
-        {token && (
-          <button className="logoutButton" onClick={handleLogout}>
-            Logout
-          </button>
-        )}
-        <br />
-        <div className="sideBarDiv">
-          <SideBar />
-        </div>
-      </div>
-    </nav>
-  )
-}
 function showRoutesPerRole(route: IRoute) {
   if (route.onlyAdmin) {
     const userRole = localStorage.getItem("role")

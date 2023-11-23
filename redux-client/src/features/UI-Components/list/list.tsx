@@ -27,16 +27,13 @@ const List = (props: any) => {
     return user?.id !== userData?.id
   })
 
-  const filteredUsersData = usersData.filter((user:any) => {
-    return !chats.some((cUser:any) => cUser?.secondUserId === user?.id);
-  });
-  
+  const filteredUsersData = usersData.filter((user: any) => {
+    return !chats.some((cUser: any) => cUser?.secondUserId === user?.id)
+  })
 
-  
   const isUserOnline = usersData.map((user: any) =>
     onlineUsers.some((onlineUser: any) => onlineUser?.id === user?.id),
   )
- 
 
   const chatHandler = (chatId: number) => {
     setSelectedChatId((prevChatId) => (prevChatId === chatId ? null : chatId))
@@ -45,16 +42,14 @@ const List = (props: any) => {
   const fetchChats = async () => {
     const result = await fetchChatsById(userData?.id)
     const result2 = await fetchChatsBySecondId(userData?.id)
-    const result3 = [...result,...result2]
-    console.log(result3);
-    
+    const result3 = [...result, ...result2]
+
     setChats(result3)
   }
- 
 
   useEffect(() => {
     fetchChats()
-    }, [])
+  }, [])
 
   useEffect(() => {
     if (token) {
@@ -89,63 +84,62 @@ const List = (props: any) => {
     }
     await createNewChat(dataForChat as IChat)
     await fetchChats()
-   }
+  }
 
   return (
-    <div className="list-container">
-      <Panel className="listContainer" header="Chat List">
-        <Button
-          onClick={() => {
-            setIsOn(!isOn)
-          }}
-        >
-          New Chat
-        </Button>
-        {isOn && (
-          <div className="addChatForm">
-            <ScrollPanel style={{ height: "10rem" }}>
-              <ul className="p-list p-list-bordered chatList">
-                {filteredUsersData.map((user: any, index: number) => (
-                  <div
-                    key={user?.email}
-                    onClick={() => createNewChatHandler(user)}
-                  >
-                    <li key={user.id} className="p-list-item chatItem">
-                      <span className="chatName">
-                        {` ${user.firstName} ${user.lastName}`}{" "}
-                        {isUserOnline[index] ? "Online" : "Offline"}
-                      </span>
-                    </li>
-                  </div>
-                ))}
-              </ul>
-            </ScrollPanel>
-          </div>
-        )}
-        <ScrollPanel style={{ height: "20rem" }}>
-          <ul className="p-list p-list-bordered chatList">
-            {chats.map((chat: any) => (
-              <li
-                key={chat.chatId}
-                className="p-list-item chatItem"
-                onClick={() => chatHandler(chat.chatId)}
-              >
-                <span className="chatName">{`${chat.firstUserName} & ${chat.secondUserName}`}</span>
-              </li>
-            ))}
-          </ul>
-        </ScrollPanel>
-      </Panel>
+    <div className="">
       {selectedChatId !== null && (
-        <div className="rightSideContainer">
-          <SingleChatComponent
-            chatOn={true}
-            roomId={selectedChatId}
-          ></SingleChatComponent>
-        </div>
+        <SingleChatComponent chatOn={true} roomId={selectedChatId} />
       )}
+      <div className="flex flex-row h-screen w-1/6 bg-gray-900 absolute top-12 left-0">
+        <ul className="list-none mt-4 w-full overflow-y-auto" >
+          {chats.map((chat: any) => (
+            <li
+              key={chat.chatId}
+              onClick={() => chatHandler(chat.chatId)}
+              className="cursor-pointer mb-2 p-2  bg-gray-800 rounded"
+            >
+              <span className=" text-indigo-300">
+                {" "}
+                {userData?.id === chat.firstUserId
+                  ? chat.secondUserName
+                  : chat.firstUserName}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   )
 }
 
 export default List
+
+{
+  /* <Button
+  onClick={() => {
+    setIsOn(!isOn)
+  }}
+>
+  New Chat
+</Button>
+{isOn && (
+  <div className="">
+      <ul className="">
+        {filteredUsersData.map((user: any, index: number) => (
+          <div
+            key={user?.email}
+            onClick={() => createNewChatHandler(user)}
+          >
+            <li key={user.id} className="">
+              <span className="">
+                {` ${user.firstName} ${user.lastName}`}{" "}
+                {isUserOnline[index] ? "Online" : "Offline"}
+              </span>
+            </li>
+          </div>
+        ))}
+      </ul>
+  </div>
+)} */
+}

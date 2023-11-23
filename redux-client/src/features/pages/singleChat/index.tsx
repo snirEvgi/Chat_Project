@@ -11,15 +11,13 @@ function SingleChatComponent(props: any) {
   const [message, setMessage] = useState("")
   const [chatRows, setChatRows] = useState<any[]>([])
   const [socket, setSocket] = useState<Socket>()
-  const [onlineUsers, setOnlineUsers] = useState([])
-  // console.log(onlineUsers, "single chat OU")
   const userData = JSON.parse(localStorage.getItem("userRecord") as any)
   const userName = `${userData?.firstName} ${userData?.lastName}`
   const sender = userData?.email
   const messagesRef = useRef<HTMLDivElement | null>(null)
   const [isTyping, setIsTyping] = useState(false)
   const [typingUser, setTypingUser] = useState("")
-
+  const onlineUsersGlobal = localStorage.getItem("onlineUsers")
   const handlerActivity = () => {
     socket?.emit("activity", userName)
     scrollToBottom()
@@ -34,7 +32,7 @@ function SingleChatComponent(props: any) {
       scrollToBottom()
     }
   }
-  
+
   useEffect(() => {
     const initSocket = () => {
       const newSocket = io("http://localhost:4300")
@@ -73,7 +71,7 @@ function SingleChatComponent(props: any) {
   useEffect(() => {
     socket?.on("userList", (data) => {
       // Handle user list update if needed
-      setOnlineUsers(data.users)
+      // setOnlineUsers(data.users)
       console.log(data, "online")
     })
     socket?.on("activity", (data) => {
@@ -144,50 +142,56 @@ function SingleChatComponent(props: any) {
   }
 
   return (
-    <div className="chatBox">
-      {props.chatOn ? (
-        <>
-          <div className="chatHistory" ref={messagesRef}>
-            {chatRows.map((row, index) => (
-              <div
+    <div className="p-4  max-h-[700px] min-h-[700px]  relative ml-72">
+      <div className="  bg-gray-900 p-2 w-5/6 max-h-[600px] min-h-[600px]overflow-y-auto overflow-x-hidden rounded-2xl">
+      {/* <br /> */}
+        {props.chatOn ? (
+          <>
+              <div className=" fixed border-y  bg-gray-900 border-gray-900 flex justify-between items-center h-12 max-w-full  px-3 text-white mb-20"> chat Header</div>
+            <div className="max-w-[480px]" ref={messagesRef}>
+              {chatRows.map((row, index) => (
+                <div
                 key={index}
-                className={`messageBubble ${
-                  row.name === sender ? "sentMessage" : "receivedMessage"
+                className={` break-words p-2 rounded-xl m-2 ${
+                  row.name === sender ? "bg-teal-700" : "bg-white text-black relative left-[600px]"
                 }`}
-              >
-                <span className="messageUser">
-                  {row.name === sender ? "You" : sender}:
-                </span>{" "}
-                {row.text}
-                <br />
-                <span style={{ position: "relative", left: "40.5rem" }}>
-                  {row.time}
-                </span>
-              </div>
-            ))}
-            {isTyping && (
-              <div className="typingIndicator">{typingUser} is typing...</div>
-            )}
-          </div>
-          <div className="inputBox">
-            <input
-              className="inputTextSend"
-              type="text"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              onKeyDown={(e) => {
-                handlerActivity()
-                e.code === "Enter" && handleSendMessage()
-              }}
-            />
-            <button className="buttonSend" onClick={handleSendMessage}>
-              {`>>`}
-            </button>
-          </div>
-        </>
-      ) : (
-        <div className="chatHistory"> Choose a chat...</div>
-      )}
+                >
+                  <div className="text-center w-full border-b border-gray-900 p-0 m-0 mb-2 text-lg">
+                    {row.name === sender ? "You" : sender}
+                  </div>
+                  <br /> 
+                  <div className="p-1 mb-1">{row.text}</div>
+                  <br />
+                  <span className=" p-1 text-right text-xs">{row.time}</span>
+                </div>
+              ))}
+              {isTyping && (
+                <div className="typingIndicator">{typingUser} is typing...</div>
+              )}
+            </div>
+          </>
+        ) : (
+          <div className="chatHistory"> Choose a chat...</div>
+        )}
+      </div>
+      <div className="">
+        <input
+          className="text-black w-5/6 p-2 border border-gray-300 rounded"
+          type="text"
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          onKeyDown={(e) => {
+            handlerActivity()
+            e.code === "Enter" && handleSendMessage()
+          }}
+        />
+        <button
+          className="text-black relative right-10 p-2 font-bold"
+          onClick={handleSendMessage}
+        >
+          {`>>`}
+        </button>
+      </div>
     </div>
   )
 }

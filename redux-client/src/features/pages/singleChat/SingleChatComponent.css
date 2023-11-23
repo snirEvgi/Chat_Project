@@ -1,4 +1,27 @@
-.chatBox {
+.typingIndicator {
+  color: #888; 
+  font-style: italic;
+  margin-top: 5px;
+}
+.messageBubble {
+  padding: 8px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  word-wrap: break-word;
+}
+
+.sentMessage {
+  background-color: #3498db;
+  align-self: flex-end;
+}
+
+.receivedMessage {
+  color: black;
+
+  background-color: #f2f2f2;
+ 
+}
+/* .chatBox {
   border: 1px solid #ddd;
   border-radius: 10px;
   overflow-x: hidden;
@@ -15,28 +38,8 @@
   color: #333;
 }
 
-.messageBubble {
-  padding: 8px;
-  margin-bottom: 8px;
-  border-radius: 8px;
-  word-wrap: break-word;
-}
 
-.sentMessage {
-  background-color: #3498db;
-  color: #fff;
-  align-self: flex-end;
-}
 
-.receivedMessage {
-  background-color: #f2f2f2;
-  color: #333;
-}
-.typingIndicator {
-  color: #888; /* Adjust the color as needed */
-  font-style: italic;
-  margin-top: 5px;
-}
 .inputBox {
   display: flex;
   align-items: center;
@@ -59,4 +62,4 @@
   border-radius: 5px;
   cursor: pointer;
   margin-left: 8px;
-}
+} */

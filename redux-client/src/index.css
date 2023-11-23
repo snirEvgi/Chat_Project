@@ -1,5 +1,10 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
 body {
-  background-image: url("https://media.istockphoto.com/id/155380716/photo/commercial-jet-flying-over-clouds.jpg?s=612x612&w=0&k=20&c=idhnJ7ZdrLA1Dv5GO2R28A8WCx1SXCFVLu5_2cfdvXw=");
+  background-color: black;
+  color: white;
   font-family: Arial, sans-serif;
   background-attachment: fixed;
   background-position: center;
@@ -7,6 +12,7 @@ body {
   background-size: cover;
   scroll-behavior: smooth;
 }
+/* 
 
 .logoImage {
   cursor: pointer;
@@ -199,4 +205,4 @@ body {
     max-width: 100%;
     height: auto;
   }
-}
+} */
