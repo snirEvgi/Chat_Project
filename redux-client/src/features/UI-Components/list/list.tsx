@@ -92,14 +92,49 @@ const List = (props: any) => {
         <SingleChatComponent chatOn={true} roomId={selectedChatId} />
       )}
       <div className="flex flex-row h-screen w-1/6 bg-gray-900 absolute top-12 left-0">
-        <ul className="list-none mt-4 w-full overflow-y-auto" >
+        <ul className="list-none mt-4 w-full overflow-y-auto p-2">
+
+          <li   className=" mb-2 p-3  bg-gray-800 rounded-2xl">
+
+         <span onClick={() => {
+            setIsOn(!isOn)
+          }} className="cursor-pointer border-[2px] hover:bg-gray-600 border-teal-400 rounded-3xl font-bold p-2 text-teal-400">  +{" "}</span>
+        </li>
+        <div > 
+
+        {isOn && (
+           <ul className="list-none mt-4 w-full overflow-y-auto p-2">
+           {filteredUsersData.length > 0 ? (
+             filteredUsersData.map((user: any, index: number) => (
+               <div
+                 key={user?.email}
+                 className=""
+                 onClick={() => createNewChatHandler(user)}
+               >
+                 <li key={user.id} className="cursor-pointer mb-2 p-3  bg-gray-800 rounded-2xl">
+                   <span className=" hover:bg-gray-600 border-teal-400 rounded-3xl font-bold  text-teal-400">
+                     {` ${user.firstName} ${user.lastName}`}{" "}
+                     {isUserOnline[index] ? "Online" : "Offline"}
+                   </span>
+                 </li>
+               </div>
+             ))
+           ) : (
+             <li>
+               <span>No available users</span>
+             </li>
+           )}
+         </ul>
+        )}
+
+        </div>
           {chats.map((chat: any) => (
             <li
               key={chat.chatId}
               onClick={() => chatHandler(chat.chatId)}
-              className="cursor-pointer mb-2 p-2  bg-gray-800 rounded"
+              className="cursor-pointer mb-2 p-2  bg-gray-800 rounded-2xl"
             >
-              <span className=" text-indigo-300">
+              <span className=" text-teal-400 ">
                 {" "}
                 {userData?.id === chat.firstUserId
                   ? chat.secondUserName
@@ -114,32 +149,3 @@ const List = (props: any) => {
 }
 
 export default List
-
-{
-  /* <Button
-  onClick={() => {
-    setIsOn(!isOn)
-  }}
->
-  New Chat
-</Button>
-{isOn && (
-  <div className="">
-      <ul className="">
-        {filteredUsersData.map((user: any, index: number) => (
-          <div
-            key={user?.email}
-            onClick={() => createNewChatHandler(user)}
-          >
-            <li key={user.id} className="">
-              <span className="">
-                {` ${user.firstName} ${user.lastName}`}{" "}
-                {isUserOnline[index] ? "Online" : "Offline"}
-              </span>
-            </li>
-          </div>
-        ))}
-      </ul>
-  </div>
-)} */
-}

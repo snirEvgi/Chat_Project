@@ -147,7 +147,7 @@ function SingleChatComponent(props: any) {
         <div
           className=" fixed border-y 
            bg-gray-900 border-gray-900 flex justify-between items-center
-            h-12 max-w-full w-[400px] rounded-2xl  px-3 text-white top-6 "
+            h-16 max-w-full w-[66.5%] rounded-2xl  px-3 text-white top-18 border"
         >
         <ul className="hidden md:flex">
           <li className="p-4">Call</li>
@@ -155,7 +155,7 @@ function SingleChatComponent(props: any) {
           <li className="p-4">Pin to top</li>
         </ul>
       </div>
-      <div className="  bg-gray-900 p-2 w-5/6 h-[600px] max-h-[600px] min-h-[600px]overflow-y-auto overflow-x-hidden rounded-2xl">
+      <div className="  bg-gray-900 p-2 w-5/6 h-[600px] max-h-[600px] min-h-[600px] overflow-y-auto overflow-x-hidden rounded-2xl">
         {/* <br /> */}
         {props.chatOn ? (
           <>
