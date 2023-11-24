@@ -14,9 +14,10 @@ function SingleChatComponent(props: any) {
   const [onlineUserInRoomData, setOnlineUserInRoomData] = useState<Array<any>>(
     [],
   )
-  console.log(props.currentChat , "currentChat[0]?.firstUserName");
-  
+  console.log(props.currentChat, "currentChat[0]?.firstUserName")
+
   const [chatRows, setChatRows] = useState<any[]>([])
+  const [chat, setChat] = useState<any>({})
   const [socket, setSocket] = useState<Socket>()
   const userData = JSON.parse(localStorage.getItem("userRecord") as any)
   const userName = `${userData?.firstName} ${userData?.lastName}`
@@ -28,15 +29,29 @@ function SingleChatComponent(props: any) {
     localStorage.getItem("onlineUsers") as any,
   )
   const currentChat = props.currentChat
-  const isFriendOnline = onlineUsersGlobal.filter((user:any)=>{ return userData?.id !== currentChat.firstUserId ? user.id !== currentChat.secondUserId: user.id !== currentChat.firstUserId } )
+  const usersData = onlineUsersGlobal.filter((user: any) => {
+    return user?.id !== userData?.id
+  })
+  const prepCurrentChatData = {
+    name:
+      userData.id === currentChat.firstUserId
+        ? currentChat.secondUserName
+        : currentChat.firstUserName,
+    id:
+      userData.id === currentChat.firstUserId
+        ? currentChat.secondUserId
+        : currentChat.firstUserId,
+  };  
+  const isFriendOnline:any = usersData.find((user:any)=>{ return user.id === prepCurrentChatData?.id } )|| []
+  if (isFriendOnline) {
+    console.log(`${isFriendOnline.name} is online.`);
+  } else {
+    console.log(`${prepCurrentChatData.name} is not found in usersData.`);
+  }
+  console.log(prepCurrentChatData, "hahahahahhahahahah222");
   console.log(isFriendOnline, "hahahahahhahahahah");
-  
-  // const isUserOnlineInRoom: any = onlineUserInRoomData.filter((user: any) => {
-  //   return user?.name !== userName
-  // })
-  // const userIsOnlineInChat: any = onlineUsersGlobal.filter((user: any) => {
-  //   return user?.id !== props.currentChat[0]
-  // })
+
+
   const handlerActivity = () => {
     socket?.emit("activity", userName)
     scrollToBottom()
@@ -144,7 +159,6 @@ function SingleChatComponent(props: any) {
 
         const response = await dispatch(sendMessage(messagePack))
 
-
         scrollToBottom()
       } catch (error) {
         console.error("Error sending message:", error)
@@ -162,12 +176,10 @@ function SingleChatComponent(props: any) {
             h-12 max-w-full lg:w-[66.5%] rounded-2xl  px-3 text-white top-16 border"
       >
         <h3 className=" flex gap-2">
-          {currentChat.firstUserId !== userData?.id
-            ? `${currentChat?.firstUserName}`
-            : currentChat?.secondUserName}{" "}
+          {prepCurrentChatData.name} {" "}
           <span>
             {" "}
-            {isFriendOnline.length ? (
+            {isFriendOnline.id  ? (
               <img height={25} width={25} src={online} alt="online" />
             ) : (
               <img height={25} width={25} src={offline} alt="offline" />
