@@ -35,7 +35,7 @@ CREATE TABLE `chats` (
   KEY `secondUserId` (`secondUserId`),
   CONSTRAINT `fk_firstUserId` FOREIGN KEY (`firstUserId`) REFERENCES `users` (`id`),
   CONSTRAINT `fk_secondUserId` FOREIGN KEY (`secondUserId`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=73 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -44,7 +44,7 @@ CREATE TABLE `chats` (
 
 LOCK TABLES `chats` WRITE;
 /*!40000 ALTER TABLE `chats` DISABLE KEYS */;
-INSERT INTO `chats` VALUES (1,34567,34567,'snir','yuval'),(2,34567,34567,'demo','demo'),(3,6,3,'snirevg@gmail.com','root@root.com'),(4,6,4,'snirevg@gmail.com','yuval@gmail.com');
+INSERT INTO `chats` VALUES (71,6,5,'Snir Evgi','Beber Snir'),(72,6,1,'Snir Evgi','Admin Admin');
 /*!40000 ALTER TABLE `chats` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -65,7 +65,7 @@ CREATE TABLE `messages` (
   KEY `chatId` (`room`),
   KEY `fk_senderId` (`name`),
   CONSTRAINT `fk_chatId` FOREIGN KEY (`room`) REFERENCES `chats` (`chatId`)
-) ENGINE=InnoDB AUTO_INCREMENT=220 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=255 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -74,7 +74,7 @@ CREATE TABLE `messages` (
 
 LOCK TABLES `messages` WRITE;
 /*!40000 ALTER TABLE `messages` DISABLE KEYS */;
-INSERT INTO `messages` VALUES (193,'snire','sssss',2,'12:12:12 PM'),(194,'snire','asasassasa',2,'22:15:23 PM'),(195,'root@root.com','s',1,'7:10:48 PM'),(196,'root@root.com','sup',2,'7:11:41 PM'),(197,'root@root.com','yo',2,'7:13:49 PM'),(198,'root@root.com','a',2,'7:14:43 PM'),(199,'root@root.com','a',2,'7:15:41 PM');
+INSERT INTO `messages` VALUES (254,'Beber Snir','asdasdasd',71,'2:10:59');
 /*!40000 ALTER TABLE `messages` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -131,7 +131,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'snir','evgi','init@init.com','1234','user','1234','2023-11-11 13:00:40'),(2,'yuval','chen','init2@init.com','1234','admin','1234','2023-11-11 13:00:40'),(3,'Yuval','Chen','root@root.com','$2b$10$rIQzPtjxLJqXnSNmiIpMDu440kLkSEiUEG7gv9efRLADqFjk7mf/G','user','$2b$10$rIQzPtjxLJqXnSNmiIpMDu','2023-11-11 13:21:52'),(4,'Yuval','Chen','yuval@gmail.com','$2b$10$x2.PtgNP02GIKnRS/VMei.dtK6sppsXJV98/iv1aFmX5g/7U9ZrSG','user','$2b$10$x2.PtgNP02GIKnRS/VMei.','2023-11-12 15:53:55'),(5,'Beber','Snir','admin@gmail.com','$2b$10$snj6ITvHusH/Rwk.VezUWeBY/m/eK8/AZSrflSadGJix33RpzcYGS','user','$2b$10$snj6ITvHusH/Rwk.VezUWe','2023-11-14 16:16:52'),(6,'Snir','Evgi','snirevg@gmail.com','$2b$10$3Ia1AJnWNOUHiax0r49PzOp/6VI1l5.sBJAxGpka3p303lzZYaDW6','user','$2b$10$3Ia1AJnWNOUHiax0r49PzO','2023-11-19 17:41:27');
+INSERT INTO `users` VALUES (1,'Admin','Admin','init@init.com','1234','user','1234','2023-11-11 13:00:40'),(2,'Stas','Shubaev','init2@init.com','1234','admin','1234','2023-11-11 13:00:40'),(3,'Maor','Sheiman','root@root.com','$2b$10$rIQzPtjxLJqXnSNmiIpMDu440kLkSEiUEG7gv9efRLADqFjk7mf/G','user','$2b$10$rIQzPtjxLJqXnSNmiIpMDu','2023-11-11 13:21:52'),(4,'Yuval','Chen','yuval@gmail.com','$2b$10$x2.PtgNP02GIKnRS/VMei.dtK6sppsXJV98/iv1aFmX5g/7U9ZrSG','user','$2b$10$x2.PtgNP02GIKnRS/VMei.','2023-11-12 15:53:55'),(5,'Beber','Snir','admin@gmail.com','$2b$10$snj6ITvHusH/Rwk.VezUWeBY/m/eK8/AZSrflSadGJix33RpzcYGS','user','$2b$10$snj6ITvHusH/Rwk.VezUWe','2023-11-14 16:16:52'),(6,'Snir','Evgi','snirevg@gmail.com','$2b$10$3Ia1AJnWNOUHiax0r49PzOp/6VI1l5.sBJAxGpka3p303lzZYaDW6','user','$2b$10$3Ia1AJnWNOUHiax0r49PzO','2023-11-19 17:41:27');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -144,4 +144,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-11-20 23:39:12
+-- Dump completed on 2023-11-24  2:54:38
