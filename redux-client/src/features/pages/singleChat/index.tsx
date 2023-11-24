@@ -11,7 +11,11 @@ function SingleChatComponent(props: any) {
   const dispatch = useAppDispatch()
 
   const [message, setMessage] = useState("")
-  const [onlineUserInRoomData, setOnlineUserInRoomData] = useState<Array<any>>([])
+  const [onlineUserInRoomData, setOnlineUserInRoomData] = useState<Array<any>>(
+    [],
+  )
+  console.log(props.currentChat , "currentChat[0]?.firstUserName");
+  
   const [chatRows, setChatRows] = useState<any[]>([])
   const [socket, setSocket] = useState<Socket>()
   const userData = JSON.parse(localStorage.getItem("userRecord") as any)
@@ -20,10 +24,19 @@ function SingleChatComponent(props: any) {
   const messagesRef = useRef<HTMLDivElement | null>(null)
   const [isTyping, setIsTyping] = useState(false)
   const [typingUser, setTypingUser] = useState("")
-  const onlineUsersGlobal = JSON.parse(localStorage.getItem("onlineUsers")as any )
-  const isUserOnlineInRoom:any = onlineUserInRoomData.filter((user:any)=>{ return user?.name !== userName}) 
-  const userIsOnlineInChat:any = onlineUsersGlobal.filter((user:any)=>{ return user?.id !== props.currentUser}) 
-  console.log(userIsOnlineInChat,"Aaaaaasdasdsdasdsaa");
+  const onlineUsersGlobal = JSON.parse(
+    localStorage.getItem("onlineUsers") as any,
+  )
+  const currentChat = props.currentChat
+  const isFriendOnline = onlineUsersGlobal.filter((user:any)=>{ return userData?.id !== currentChat.firstUserId ? user.id !== currentChat.secondUserId: user.id !== currentChat.firstUserId } )
+  console.log(isFriendOnline, "hahahahahhahahahah");
+  
+  // const isUserOnlineInRoom: any = onlineUserInRoomData.filter((user: any) => {
+  //   return user?.name !== userName
+  // })
+  // const userIsOnlineInChat: any = onlineUsersGlobal.filter((user: any) => {
+  //   return user?.id !== props.currentChat[0]
+  // })
   const handlerActivity = () => {
     socket?.emit("activity", userName)
     scrollToBottom()
@@ -52,20 +65,18 @@ function SingleChatComponent(props: any) {
           room: props?.roomId,
           time: data?.time,
         }
-        
+
         setChatRows((prevMessages) => {
           return [...prevMessages, ...[prepMessage]]
         })
         scrollToBottom()
         setMessage("")
       })
-      
+
       setSocket(newSocket)
     }
     socket?.on("roomList", (data) => {
       // Handle user list update if needed
-      console.log(data, "roomlist")
-
     })
     initSocket()
     fetchChatHistory()
@@ -75,12 +86,11 @@ function SingleChatComponent(props: any) {
     }
   }, [props.roomId])
   useEffect(() => {
-      socket?.on("userList", (data) => {
-        console.log(data, "online")
-        setOnlineUserInRoomData(data.users)
-        console.log(onlineUserInRoomData,"dataForMessage");
-      })
-    
+    socket?.on("userList", (data) => {
+      console.log(data, "online")
+      setOnlineUserInRoomData(data.users)
+    })
+
     socket?.on("activity", (data) => {
       // Handle user list update if needed
       console.log(data)
@@ -103,7 +113,7 @@ function SingleChatComponent(props: any) {
 
   const scrollToBottom = () => {
     if (messagesRef.current) {
-      messagesRef.current.scrollTop= messagesRef.current.scrollHeight
+      messagesRef.current.scrollTop = messagesRef.current.scrollHeight
     }
   }
 
@@ -131,36 +141,41 @@ function SingleChatComponent(props: any) {
             second: "numeric",
           }).format(new Date()) as string,
         }
-        console.log(messagePack,"messagePack");
-        
 
         const response = await dispatch(sendMessage(messagePack))
 
-        // Log after successful send
-        console.log("Message sent successfully")
 
         scrollToBottom()
       } catch (error) {
-        // Log any errors
         console.error("Error sending message:", error)
       } finally {
-        // Clear the message input
         setMessage("")
       }
     }
   }
 
   return (
-    <div className="p-4  max-h-[700px] min-h-[700px]  relative ml-72">
-        <div
-          className="md:hidden sm:hidden lg:fixed lg:border-y 
-           bg-gray-900 border-gray-900 lg:flex justify-between items-center
-            h-12 max-w-full lg:w-[66.5%] rounded-2xl  px-3 text-white top-16 border "
-        >
-       <h3 className=" flex gap-2">{userIsOnlineInChat[0]?.id !== undefined?`${userIsOnlineInChat[0]?.firstName} ${userIsOnlineInChat[0].lastName}`: "Offline"} <span> {userIsOnlineInChat[0]?.id !== undefined ? <img height={25} width={25} src={online} alt="online"  />: <img height={25} width={25} src={offline} alt="offline" />}</span></h3>
+    <div className="p-4  mt-6 max-h-[700px] min-h-[700px]  relative ml-72">
+      <div
+        className="md:hidden sm:hidden lg:fixed lg:border-y p-3
+             bg-slate-700 border-gray-900 lg:flex justify-between items-center
+            h-12 max-w-full lg:w-[66.5%] rounded-2xl  px-3 text-white top-16 border"
+      >
+        <h3 className=" flex gap-2">
+          {currentChat.firstUserId !== userData?.id
+            ? `${currentChat?.firstUserName}`
+            : currentChat?.secondUserName}{" "}
+          <span>
+            {" "}
+            {isFriendOnline.length ? (
+              <img height={25} width={25} src={online} alt="online" />
+            ) : (
+              <img height={25} width={25} src={offline} alt="offline" />
+            )}
+          </span>
+        </h3>
       </div>
       <div className="  bg-gray-900 p-2 w-5/6 h-[600px] max-h-[600px] min-h-[600px] overflow-y-auto overflow-x-hidden rounded-2xl">
-        {/* <br /> */}
         {props.chatOn ? (
           <>
             <div className="max-w-[480px]" ref={messagesRef}>

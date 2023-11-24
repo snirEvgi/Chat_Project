@@ -14,7 +14,7 @@ import { Socket, io } from "socket.io-client"
 
 const List = (props: any) => {
   const [selectedChatId, setSelectedChatId] = useState<number | null>(null)
-  const [otherUserId, setOtherUserId] = useState<number>(0)
+  const [currentChat, setCurrentChat] = useState<Array<any>>([])
   const [isOn, setIsOn] = useState<boolean>(false)
   const [chats, setChats] = useState<Array<any>>([])
   const userData = JSON.parse(localStorage.getItem("userRecord") as any)
@@ -38,7 +38,7 @@ const List = (props: any) => {
 
   const chatHandler = (chat: any) => {
     setSelectedChatId((prevChatId) => (prevChatId === chat.chatId ? null : chat.chatId))
-    userHandler(chat)
+    setCurrentChat(chat)
   }
 
   const fetchChats = async () => {
@@ -76,17 +76,7 @@ const List = (props: any) => {
       console.error("Error fetching chats:", error)
     }
   }
-const userHandler = (chat:any) => {
-  
-if(userData?.id !== chat.firstUserId){
 
-  setOtherUserId(chat.secondUserId)
-}else{
-  setOtherUserId(chat?.firstUserId)
-}
-
-
-}
   const createNewChatHandler = async (user: any) => {
     const dataForChat = {
       firstUserId: userData?.id,
@@ -102,7 +92,7 @@ if(userData?.id !== chat.firstUserId){
   return (
     <div className="">
       {selectedChatId !== null && (
-        <SingleChatComponent chatOn={true} currentUser={otherUserId} roomId={selectedChatId} />
+        <SingleChatComponent chatOn={true} currentChat={currentChat} roomId={selectedChatId} />
       )}
       <div className="flex flex-row h-screen w-1/6 bg-gray-900 absolute top-12 left-0">
         <ul className="list-none mt-4 w-full overflow-y-auto p-2">
