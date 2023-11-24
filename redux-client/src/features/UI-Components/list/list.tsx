@@ -14,6 +14,7 @@ import { Socket, io } from "socket.io-client"
 
 const List = (props: any) => {
   const [selectedChatId, setSelectedChatId] = useState<number | null>(null)
+  const [otherUserId, setOtherUserId] = useState<number>(0)
   const [isOn, setIsOn] = useState<boolean>(false)
   const [chats, setChats] = useState<Array<any>>([])
   const userData = JSON.parse(localStorage.getItem("userRecord") as any)
@@ -35,8 +36,9 @@ const List = (props: any) => {
     onlineUsers.some((onlineUser: any) => onlineUser?.id === user?.id),
   )
 
-  const chatHandler = (chatId: number) => {
-    setSelectedChatId((prevChatId) => (prevChatId === chatId ? null : chatId))
+  const chatHandler = (chat: any) => {
+    setSelectedChatId((prevChatId) => (prevChatId === chat.chatId ? null : chat.chatId))
+    userHandler(chat)
   }
 
   const fetchChats = async () => {
@@ -74,7 +76,17 @@ const List = (props: any) => {
       console.error("Error fetching chats:", error)
     }
   }
+const userHandler = (chat:any) => {
+  
+if(userData?.id !== chat.firstUserId){
 
+  setOtherUserId(chat.secondUserId)
+}else{
+  setOtherUserId(chat?.firstUserId)
+}
+
+
+}
   const createNewChatHandler = async (user: any) => {
     const dataForChat = {
       firstUserId: userData?.id,
@@ -82,6 +94,7 @@ const List = (props: any) => {
       firstUserName: userName,
       secondUserName: user?.firstName + " " + user.lastName,
     }
+
     await createNewChat(dataForChat as IChat)
     await fetchChats()
   }
@@ -89,7 +102,7 @@ const List = (props: any) => {
   return (
     <div className="">
       {selectedChatId !== null && (
-        <SingleChatComponent chatOn={true} roomId={selectedChatId} />
+        <SingleChatComponent chatOn={true} currentUser={otherUserId} roomId={selectedChatId} />
       )}
       <div className="flex flex-row h-screen w-1/6 bg-gray-900 absolute top-12 left-0">
         <ul className="list-none mt-4 w-full overflow-y-auto p-2">
@@ -136,7 +149,7 @@ const List = (props: any) => {
           {chats.map((chat: any) => (
             <li
               key={chat.chatId}
-              onClick={() => chatHandler(chat.chatId)}
+              onClick={() => chatHandler(chat)}
               className="cursor-pointer mb-2 p-2  bg-gray-800 rounded-2xl"
             >
               <span className=" text-teal-400 ">

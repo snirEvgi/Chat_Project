@@ -22,7 +22,8 @@ function SingleChatComponent(props: any) {
   const [typingUser, setTypingUser] = useState("")
   const onlineUsersGlobal = JSON.parse(localStorage.getItem("onlineUsers")as any )
   const isUserOnlineInRoom:any = onlineUserInRoomData.filter((user:any)=>{ return user?.name !== userName}) 
-  console.log(isUserOnlineInRoom,"Aaaaaasdasdsdasdsaa");
+  const userIsOnlineInChat:any = onlineUsersGlobal.filter((user:any)=>{ return user?.id !== props.currentUser}) 
+  console.log(userIsOnlineInChat,"Aaaaaasdasdsdasdsaa");
   const handlerActivity = () => {
     socket?.emit("activity", userName)
     scrollToBottom()
@@ -156,7 +157,7 @@ function SingleChatComponent(props: any) {
            bg-gray-900 border-gray-900 lg:flex justify-between items-center
             h-12 max-w-full lg:w-[66.5%] rounded-2xl  px-3 text-white top-16 border "
         >
-       <h3 className=" flex gap-2">{isUserOnlineInRoom[0]?.name !== undefined?isUserOnlineInRoom[0]?.name: "Offline"} <span> {isUserOnlineInRoom[0]?.name !== undefined ? <img height={25} width={25} src={online} alt="online"  />: <img height={25} width={25} src={offline} alt="offline" />}</span></h3>
+       <h3 className=" flex gap-2">{userIsOnlineInChat[0]?.id !== undefined?`${userIsOnlineInChat[0]?.firstName} ${userIsOnlineInChat[0].lastName}`: "Offline"} <span> {userIsOnlineInChat[0]?.id !== undefined ? <img height={25} width={25} src={online} alt="online"  />: <img height={25} width={25} src={offline} alt="offline" />}</span></h3>
       </div>
       <div className="  bg-gray-900 p-2 w-5/6 h-[600px] max-h-[600px] min-h-[600px] overflow-y-auto overflow-x-hidden rounded-2xl">
         {/* <br /> */}
