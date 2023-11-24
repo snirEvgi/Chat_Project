@@ -4,6 +4,8 @@ import "./SingleChatComponent.css"
 import { sendMessage } from "./singleChatSlice"
 import { getMessages } from "./singleChatAPI"
 import { useAppDispatch } from "../../../app/hooks"
+import online from "../../images/online.png"
+import offline from "../../images/offline.png"
 
 function SingleChatComponent(props: any) {
   const dispatch = useAppDispatch()
@@ -18,8 +20,9 @@ function SingleChatComponent(props: any) {
   const messagesRef = useRef<HTMLDivElement | null>(null)
   const [isTyping, setIsTyping] = useState(false)
   const [typingUser, setTypingUser] = useState("")
-  const onlineUsersGlobal = localStorage.getItem("onlineUsers")
-
+  const onlineUsersGlobal = JSON.parse(localStorage.getItem("onlineUsers")as any )
+  const isUserOnlineInRoom:any = onlineUserInRoomData.filter((user:any)=>{ return user?.name !== userName}) 
+  console.log(isUserOnlineInRoom,"Aaaaaasdasdsdasdsaa");
   const handlerActivity = () => {
     socket?.emit("activity", userName)
     scrollToBottom()
@@ -73,7 +76,7 @@ function SingleChatComponent(props: any) {
   useEffect(() => {
       socket?.on("userList", (data) => {
         console.log(data, "online")
-        setOnlineUserInRoomData(data)
+        setOnlineUserInRoomData(data.users)
         console.log(onlineUserInRoomData,"dataForMessage");
       })
     
@@ -149,15 +152,11 @@ function SingleChatComponent(props: any) {
   return (
     <div className="p-4  max-h-[700px] min-h-[700px]  relative ml-72">
         <div
-          className=" fixed border-y 
-           bg-gray-900 border-gray-900 flex justify-between items-center
-            h-16 max-w-full w-[66.5%] rounded-2xl  px-3 text-white top-16 border"
+          className="md:hidden sm:hidden lg:fixed lg:border-y 
+           bg-gray-900 border-gray-900 lg:flex justify-between items-center
+            h-12 max-w-full lg:w-[66.5%] rounded-2xl  px-3 text-white top-16 border "
         >
-        <ul className="md:flex">
-          <li className="p-4">Call</li>
-          <li className="p-4">Video</li>
-          <li className="p-4">Pin to top</li>
-        </ul>
+       <h3 className=" flex gap-2">{isUserOnlineInRoom[0]?.name !== undefined?isUserOnlineInRoom[0]?.name: "Offline"} <span> {isUserOnlineInRoom[0]?.name !== undefined ? <img height={25} width={25} src={online} alt="online"  />: <img height={25} width={25} src={offline} alt="offline" />}</span></h3>
       </div>
       <div className="  bg-gray-900 p-2 w-5/6 h-[600px] max-h-[600px] min-h-[600px] overflow-y-auto overflow-x-hidden rounded-2xl">
         {/* <br /> */}
