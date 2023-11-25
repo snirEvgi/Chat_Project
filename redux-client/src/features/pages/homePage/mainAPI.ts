@@ -15,13 +15,13 @@ async function fetchAllChats(): Promise<any> {
 }
 async function fetchChatsById(fid: number): Promise<any> {
   try {
-    const result = await axios.get(`${url}/chat/cid?fid=${fid}`) //&sid=${sid}
+    const result = await axios.get(`${url}/chat/cid?fid=${fid}`)
     return result.data
   } catch (error) {}
 }
 async function fetchChatsBySecondId(sid: number): Promise<any> {
   try {
-    const result = await axios.get(`${url}/chat/cidSecond?sid=${sid}`) //&sid=${sid}
+    const result = await axios.get(`${url}/chat/cidSecond?sid=${sid}`)
     return result.data
   } catch (error) {}
 }

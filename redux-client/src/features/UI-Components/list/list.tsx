@@ -20,6 +20,8 @@ const List = (props: any) => {
   const userData = JSON.parse(localStorage.getItem("userRecord") as any)
   const token = localStorage.getItem("token")
   const [socket, setSocket] = useState<Socket>()
+  const [isMessageNew, setIsMessageNew] = useState<boolean>(false)
+
   const userName = `${userData?.firstName} ${userData?.lastName}`
   const onlineUsers =
     JSON.parse(localStorage.getItem("onlineUsers") as any) || []
@@ -52,16 +54,23 @@ const List = (props: any) => {
   useEffect(() => {
     fetchChats()
   }, [])
-
+ 
+  
   useEffect(() => {
     if (token) {
       const newSocket = io("http://localhost:4300")
       setSocket(newSocket)
-
+      
       newSocket.on("connect", () => {
         newSocket.emit("user-logged-in", userData)
       })
-
+      socket?.on("message", (data) => {
+        console.log(data,"isMsaljdlasjdsljdjsal");
+       
+        setIsMessageNew(data.name !== userName && data.isNew)
+      
+      
+      })
       return () => {
         newSocket.disconnect()
       }

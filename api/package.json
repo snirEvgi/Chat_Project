@@ -41,6 +41,6 @@
     "@types/joi": "^17.2.3",
     "@types/jsonwebtoken": "^8.5.8",
     "@types/node": "^17.0.23",
-    "typescript": "^5.2.2"
+    "typescript": "^5.3.2"
   }
 }

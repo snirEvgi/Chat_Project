@@ -50,7 +50,6 @@ authRouter.post("/login", middlewareLogin, function (req, res, next) {
         const { email, password } = req.body;
         try {
             const { result, userRecord } = yield (0, login_1.login)(email, password);
-            console.log(userRecord, "lolololoolololololololol");
             if (!result)
                 throw new Error();
             const expiresIn = "1h";
