@@ -21,7 +21,9 @@ const List = (props: any) => {
   const token = localStorage.getItem("token")
   const [socket, setSocket] = useState<Socket>()
   const [isMessageNew, setIsMessageNew] = useState<boolean>(false)
-
+  
+  // console.log("sadasdasdsad",currentChat);
+  
   const userName = `${userData?.firstName} ${userData?.lastName}`
   const onlineUsers =
     JSON.parse(localStorage.getItem("onlineUsers") as any) || []
@@ -37,6 +39,20 @@ const List = (props: any) => {
   const isUserOnline = usersData.map((user: any) =>
     onlineUsers.some((onlineUser: any) => onlineUser?.id === user?.id),
   )
+  // const prepCurrentChatData = {
+  //   name:
+  //     userData.id === currentChat.firstUserId
+  //       ? currentChat.secondUserName
+  //       : currentChat.firstUserName,
+  //   id:
+  //     userData.id === currentChat.firstUserId
+  //       ? currentChat.secondUserId
+  //       : currentChat.firstUserId,
+  // }
+  // const isFriendOnline: any =
+  //   usersData.find((user: any) => {
+  //     return user.id === prepCurrentChatData?.id
+  //   }) || []
 
   const chatHandler = (chat: any) => {
     setSelectedChatId((prevChatId) => (prevChatId === chat.chatId ? null : chat.chatId))

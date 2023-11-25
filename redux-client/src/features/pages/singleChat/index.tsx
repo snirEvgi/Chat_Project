@@ -26,7 +26,7 @@ function SingleChatComponent(props: any) {
   const [isTyping, setIsTyping] = useState<boolean>(false)
   const [typingUser, setTypingUser] = useState("")
   const [isMessageNew, setIsMessageNew] = useState<boolean>(false)
-  const [isMessageNewArray, setIsMessageNewArray] = useState<Array<boolean>>([])
+  const [isMessageNewArray, setIsMessageNewArray] = useState<Array<any>>([])
   const onlineUsersGlobal = JSON.parse(
     localStorage.getItem("onlineUsers") as any,
   )
@@ -79,9 +79,11 @@ function SingleChatComponent(props: any) {
           time: data?.time,
           isNew: data?.isNew,
         }
-        setIsMessageNew(data.name !== userName && data.isNew)
-        setIsMessageNewArray((p) => [...p, data.isNew])
-        console.log(prepMessage, "prepMessage")
+        setIsMessageNew(data.name !== userName ? data.isNew:false)
+        setIsMessageNewArray((pervData) => [...pervData , ...[data.name !== userName && data.name]])
+        // console.log(prepMessage, "prepMessage")
+        console.log(isMessageNewArray, "isMessageNewArray")
+        console.log(isMessageNew, "isMessageNew")
 
         setChatRows((prevMessages) => {
           return [...prevMessages, ...[prepMessage]]
@@ -172,11 +174,11 @@ function SingleChatComponent(props: any) {
   }
 
   return (
-    <div className="p-4  mt-6 max-h-[700px] md:min-w-[200px] lg:min-w-[1080px] min-h-[700px] relative ml-72">
+    <div className="p-4  mt-6 max-h-[700px] md:min-w-[200px] lg:min-w-[600px] min-h-[700px] relative ml-72">
       <div
-        className=" md:min-w-[200px] lg:min-w-[1080px] lg:fixed lg:border-y p-3
+        className=" md:min-w-[200px] lg:min-w-[1020px] lg:absolute  lg:border-y p-3
              bg-slate-700 border-gray-900 lg:flex justify-start items-center
-            z-10  h-12 max-w-full rounded-2xl  px-3 text-white top-16 border gap-80"
+            z-10  h-12 max-w-full rounded-2xl  px-3 text-white  border gap-80"
       >
         <h3 className=" flex gap-2">
           {prepCurrentChatData.name}{" "}
@@ -221,7 +223,7 @@ function SingleChatComponent(props: any) {
             </div>
            { isMessageNew && <div className="flex justify-around p-1 text-red-500">
               {" "}
-              _____________________ New Messages _____________________
+           {   `_____________________ You Have (${chatRows.length}) New Messages _____________________`}
             </div>}
             {chatRows.map((row, index) => (
                 <div
