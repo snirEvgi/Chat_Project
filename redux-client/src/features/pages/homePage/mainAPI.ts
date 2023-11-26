@@ -53,6 +53,23 @@ async function getAllUsersApi(): Promise<any> {
   } catch (error) {}
 }
 
+async function createNewGroupChatApi(
+  chatName: string,
+  usersId: string[],
+): Promise<any> {
+  const data = {
+    chatName,
+    usersId,
+  }
+
+  try {
+    const result = await axios.post(`${url}/chat/newGroup`, data)
+    return result.data
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 export {
   fetchAllChats,
   fetchSingleChat,
@@ -60,5 +77,6 @@ export {
   createNewChatApi,
   getAllUsersApi,
   fetchChatsById,
-  fetchChatsBySecondId
+  fetchChatsBySecondId,
+  createNewGroupChatApi,
 }
