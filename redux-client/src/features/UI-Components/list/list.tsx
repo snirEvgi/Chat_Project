@@ -135,94 +135,91 @@ const List = (props: any) => {
   }
 
   return (
-    <div className="">
-      {selectedChatId !== null && (
-        <SingleChatComponent
-          chatOn={true}
-          currentChat={currentChat}
-          roomId={selectedChatId}
-        />
-      )}
-      <div className="flex flex-row h-screen w-1/6 bg-gray-900 absolute top-12 left-0">
-        <ul className="list-none mt-4 w-full overflow-y-auto p-2">
-          <li className=" mb-2 p-3  bg-gray-800 rounded-2xl ">
-            <span
-              onClick={() => {
-                setIsOn(!isOn)
-                setIsGroupOn(false)
-              }}
-              className="cursor-pointer mx-2 border-[2px] hover:bg-gray-600 border-teal-400 rounded-3xl font-bold p-2 text-teal-400"
-            >
-              <i className="pi pi-plus"></i>
-            </span>
-            <span
-              onClick={() => {
-                setIsGroupOn(!isGroupOn)
-                setIsOn(false)
-                setShowGroupChatModal(true)
-              }}
-              className="cursor-pointer mx-2 border-[2px] hover:bg-gray-600 border-teal-400 rounded-3xl font-bold p-2 text-teal-400"
-            >
-              <i className="pi pi-users"></i>
-            </span>
-          </li>
-          <div>
-            {isOn && (
-              <ul className="list-none mt-4 w-full overflow-y-auto p-2">
-                {filteredUsersData.length > 0 ? (
-                  filteredUsersData.map((user: any, index: number) => (
-                    <div
-                      key={user?.email}
-                      className=""
-                      onClick={() => createNewChatHandler(user)}
-                    >
-                      <li
-                        key={user.id}
-                        className="cursor-pointer mb-2 p-3  bg-gray-800 rounded-2xl"
-                      >
-                        <span className=" hover:bg-gray-600 border-teal-400 rounded-3xl font-bold  text-teal-400">
-                          {` ${user.firstName} ${user.lastName}`}{" "}
-                          {isUserOnline[index] ? "Online" : "Offline"}
-                        </span>
-                      </li>
-                    </div>
-                  ))
-                ) : (
-                  <li>
-                    <span>No available users</span>
-                  </li>
-                )}
-              </ul>
+    <div className="grid grid-cols-5 h-screen">
+  <div className="col-span-1 bg-gray-900 relative">
+    <ul className="list-none mt-12 overflow-y-auto p-2">
+      <li className="mb-2 p-3 bg-gray-800 rounded-2xl">
+        <span
+          onClick={() => {
+            setIsOn(!isOn);
+            setIsGroupOn(false);
+          }}
+          className="cursor-pointer mx-2 border-[2px] hover:bg-gray-600 border-teal-400 rounded-3xl font-bold p-2 text-teal-400"
+        >
+          <i className="pi pi-plus"></i>
+        </span>
+        <span
+          onClick={() => {
+            setIsGroupOn(!isGroupOn);
+            setIsOn(false);
+            setShowGroupChatModal(true);
+          }}
+          className="cursor-pointer mx-2 border-[2px] hover:bg-gray-600 border-teal-400 rounded-3xl font-bold p-2 text-teal-400"
+        >
+          <i className="pi pi-users"></i>
+        </span>
+      </li>
+      <div>
+        {isOn && (
+          <ul className="list-none mt-4 overflow-y-auto p-2">
+            {filteredUsersData.length > 0 ? (
+              filteredUsersData.map((user: any, index: number) => (
+                <li
+                  key={user?.email}
+                  onClick={() => createNewChatHandler(user)}
+                  className="cursor-pointer mb-2 p-3 bg-gray-800 rounded-2xl"
+                >
+                  <span className="hover:bg-gray-600 border-teal-400 rounded-3xl font-bold text-teal-400">
+                    {`${user.firstName} ${user.lastName}`}{" "}
+                    {isUserOnline[index] ? "Online" : "Offline"}
+                  </span>
+                </li>
+              ))
+            ) : (
+              <li>
+                <span>No available users</span>
+              </li>
             )}
+          </ul>
+        )}
 
-            {isGroupOn && (
-              <ul className="list-none mt-4 w-full overflow-y-auto p-2">
-                <GroupChatModal
-                  visible={showGroupChatModal}
-                  onClose={handleGroupOnClose}
-                  onCreate={handleCreateGroupChat}
-                />
-                <div className="mt-4">Select Group :</div>
-              </ul>
-            )}
-          </div>
-          {chats.map((chat: any) => (
-            <li
-              key={chat.chatId}
-              onClick={() => chatHandler(chat)}
-              className="cursor-pointer mb-2 p-2  bg-gray-800 rounded-2xl"
-            >
-              <span className=" text-teal-400 ">
-                {" "}
-                {userData?.id === chat.firstUserId
-                  ? chat.secondUserName
-                  : chat.firstUserName}
-              </span>
-            </li>
-          ))}
-        </ul>
+        {isGroupOn && (
+          <ul className="list-none mt-4 overflow-y-auto p-2">
+            <GroupChatModal
+              visible={showGroupChatModal}
+              onClose={handleGroupOnClose}
+              onCreate={handleCreateGroupChat}
+            />
+            <div className="mt-4">Select Group:</div>
+          </ul>
+        )}
       </div>
-    </div>
+      {chats.map((chat: any) => (
+        <li
+          key={chat.chatId}
+          onClick={() => chatHandler(chat)}
+          className="cursor-pointer mb-2 p-2 bg-gray-800 rounded-2xl"
+        >
+          <span className="text-teal-400">
+            {userData?.id === chat.firstUserId
+              ? chat.secondUserName
+              : chat.firstUserName}
+          </span>
+        </li>
+      ))}
+    </ul>
+  </div>
+  <div className="col-span-3 ">
+    {selectedChatId !== null && (
+      <SingleChatComponent
+        chatOn={true}
+        currentChat={currentChat}
+        roomId={selectedChatId}
+      />
+    )}
+  </div>
+  <div className="col-span-1 "></div>
+</div>
   )
 }
 

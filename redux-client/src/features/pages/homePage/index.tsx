@@ -62,13 +62,9 @@ const HomePage = (props: any) => {
   }
 
   return (
-    <div className=" overflow-y-hidden">
-      <div className="">
-        <div className="overflow-y-hidden">
-          <List chats={chats} onClick={handleChatClick} users={users} />
-        </div>
-      </div>
-    </div>
+    <div className="grid grid-cols-1 gap-4 h-screen p-4">
+    <List chats={chats} onClick={handleChatClick} users={users} />
+  </div>
   )
 }
 

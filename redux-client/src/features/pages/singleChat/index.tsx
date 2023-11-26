@@ -50,7 +50,10 @@ function SingleChatComponent(props: any) {
     }) || []
 
     const isUserOnlineInRoom = onlineUserInRoomData.find((user:any)=>{return user?.name === userName})||[]
-
+    let filteredChatRows = chatRows.filter((user: any) => {
+      return user.name !== userName
+    })
+    
   const handlerActivity = () => {
     socket?.emit("activity", userName)
   }
@@ -88,6 +91,7 @@ function SingleChatComponent(props: any) {
         setChatRows((prevMessages) => {
           return [...prevMessages, ...[prepMessage]]
         })
+        
         scrollToBottom()
         setMessage("")
       })
@@ -174,16 +178,11 @@ function SingleChatComponent(props: any) {
   }
 
   return (
-    <div className="p-4  mt-6 max-h-[700px] md:min-w-[200px] lg:min-w-[600px] min-h-[700px] relative ml-72">
-      <div
-        className=" md:min-w-[200px] lg:min-w-[1020px] lg:absolute  lg:border-y p-3
-             bg-slate-700 border-gray-900 lg:flex justify-start items-center
-            z-10  h-12 max-w-full rounded-2xl  px-3 text-white  border gap-80"
-      >
-        <h3 className=" flex gap-2">
+    <div className="flex flex-col h-[40%]">
+      <div className="p-3 bg-slate-700 text-white flex justify-between items-center rounded-t-xl">
+        <h3 className="flex items-center gap-2">
           {prepCurrentChatData.name}{" "}
           <span>
-            {" "}
             {isFriendOnline.id ? (
               <img height={25} width={25} src={online} alt="online" />
             ) : (
@@ -192,12 +191,17 @@ function SingleChatComponent(props: any) {
           </span>
         </h3>
         {isTyping && (
-          <div className="text-white text-base ">{typingUser} is typing...</div>
+          <div className="text-white text-base">{typingUser} is typing...</div>
         )}
       </div>
+      {filteredChatRows.length > 0 && (
+        <div className="flex p-1 text-red-500">
+          {`You Have (${chatRows.length}) New Messages `}
+        </div>
+      )}
       <div
         ref={messagesRef}
-        className="  bg-gray-900 p-2 lg:w-[80%] h-[600px] max-h-[600px] min-h-[600px] md:min-w-[200px] lg:min-w-[600px] overflow-y-auto overflow-x-hidden rounded-2xl"
+        className="flex-grow bg-gray-900 p-2 overflow-y-auto rounded-b-xl"
       >
         {props.chatOn ? (
           <>
@@ -205,7 +209,7 @@ function SingleChatComponent(props: any) {
               {oldChatRows.map((row, index) => (
                 <div
                   key={index}
-                  className={` lg:max-w-[380px] break-words p-2 rounded-xl m-2 md:max-w-[200px] ${
+                  className={`lg:max-w-[380px] break-words p-2 rounded-xl m-2 md:max-w-[200px] ${
                     row.name === userName
                       ? "bg-teal-700"
                       : "bg-white text-black relative left-[600px]"
@@ -215,59 +219,58 @@ function SingleChatComponent(props: any) {
                     {row.name === userName ? "You" : row.name}
                   </div>
                   <br />
-                  <div className=" w-fit h-fit p-1 mb-1">{row.text}</div>
+                  <div className="w-fit h-fit p-1 mb-1">{row.text}</div>
                   <br />
-                  <span className=" p-1 text-right text-xs">{row.time}</span>
+                  <span className="p-1 text-right text-xs">{row.time}</span>
                 </div>
               ))}
             </div>
-           { isMessageNew && <div className="flex justify-around p-1 text-red-500">
-              {" "}
-           {   `_____________________ You Have (${chatRows.length}) New Messages _____________________`}
-            </div>}
+  
             {chatRows.map((row, index) => (
-                <div
-                  key={index}
-                  className={` max-w-[480px] break-words p-2 rounded-xl m-2 ${
-                    row.name === userName
-                      ? "bg-teal-700"
-                      : "bg-white text-black relative left-[600px]"
-                  }`}
-                >
-                  <div className="text-center w-full border-b border-gray-900 p-0 m-0 mb-2 text-lg">
-                    {row.name === userName ? "You" : row.name}
-                  </div>
-                  <br />
-                  <div className=" w-fit h-fit p-1 mb-1">{row.text}</div>
-                  <br />
-                  <span className=" p-1 text-right text-xs">{row.time}</span>
+              <div
+                key={index}
+                className={`max-w-[480px] break-words p-2 rounded-xl m-2 ${
+                  row.name === userName
+                    ? "bg-teal-700"
+                    : "bg-white text-black relative left-[600px]"
+                }`}
+              >
+                <div className="text-center w-full border-b border-gray-900 p-0 m-0 mb-2 text-lg">
+                  {row.name === userName ? "You" : row.name}
                 </div>
-              ))}
+                <br />
+                <div className="w-fit h-fit p-1 mb-1">{row.text}</div>
+                <br />
+                <span className="p-1 text-right text-xs">{row.time}</span>
+              </div>
+            ))}
           </>
         ) : (
           <div className="chatHistory"> Choose a chat...</div>
         )}
       </div>
-      <div className="">
+      <div className="flex items-center mt-2">
         <input
-          className="text-black lg:w-[80%] p-2 border border-gray-300 rounded"
+          className="flex-grow p-2 border border-gray-300 rounded-l-lg text-black"
           type="text"
           value={message}
+          placeholder="Type your message here..."
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={(e) => {
-            handlerActivity()
-            e.code === "Enter" && handleSendMessage()
+            handlerActivity();
+            e.code === "Enter" && handleSendMessage();
           }}
         />
         <button
-          className="text-black relative right-10 p-2 font-bold"
+          className="text-black p-2 font-bold"
           onClick={handleSendMessage}
         >
           {`>>`}
         </button>
       </div>
     </div>
-  )
+  );
+  
 }
 
 export default SingleChatComponent
