@@ -78,31 +78,19 @@ INSERT INTO `messages` VALUES (254,'Beber Snir','asdasdasd',71,'2:10:59');
 /*!40000 ALTER TABLE `messages` ENABLE KEYS */;
 UNLOCK TABLES;
 
---
--- Table structure for table `nakama`
---
+CREATE TABLE IF NOT EXISTS group_chats (
+  group_chat_id INT AUTO_INCREMENT PRIMARY KEY,
+  chat_name VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY unique_chat_name (chat_name)
+);
 
-DROP TABLE IF EXISTS `nakama`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `nakama` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `userId` int DEFAULT NULL,
-  `nakamaId` int DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `userKey_idx` (`userId`),
-  CONSTRAINT `userKey` FOREIGN KEY (`userId`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `nakama`
---
-
-LOCK TABLES `nakama` WRITE;
-/*!40000 ALTER TABLE `nakama` DISABLE KEYS */;
-/*!40000 ALTER TABLE `nakama` ENABLE KEYS */;
-UNLOCK TABLES;
+CREATE TABLE IF NOT EXISTS group_chat_members (
+  group_chat_id INT,
+  user_id INT,  -- Change this line to use INT type
+  FOREIGN KEY (group_chat_id) REFERENCES group_chats(group_chat_id) ON DELETE CASCADE,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE  
+);
 
 --
 -- Table structure for table `users`
@@ -132,6 +120,8 @@ CREATE TABLE `users` (
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
 INSERT INTO `users` VALUES (1,'Admin','Admin','init@init.com','1234','user','1234','2023-11-11 13:00:40'),(2,'Stas','Shubaev','init2@init.com','1234','admin','1234','2023-11-11 13:00:40'),(3,'Maor','Sheiman','root@root.com','$2b$10$rIQzPtjxLJqXnSNmiIpMDu440kLkSEiUEG7gv9efRLADqFjk7mf/G','user','$2b$10$rIQzPtjxLJqXnSNmiIpMDu','2023-11-11 13:21:52'),(4,'Yuval','Chen','yuval@gmail.com','$2b$10$x2.PtgNP02GIKnRS/VMei.dtK6sppsXJV98/iv1aFmX5g/7U9ZrSG','user','$2b$10$x2.PtgNP02GIKnRS/VMei.','2023-11-12 15:53:55'),(5,'Beber','Snir','admin@gmail.com','$2b$10$snj6ITvHusH/Rwk.VezUWeBY/m/eK8/AZSrflSadGJix33RpzcYGS','user','$2b$10$snj6ITvHusH/Rwk.VezUWe','2023-11-14 16:16:52'),(6,'Snir','Evgi','snirevg@gmail.com','$2b$10$3Ia1AJnWNOUHiax0r49PzOp/6VI1l5.sBJAxGpka3p303lzZYaDW6','user','$2b$10$3Ia1AJnWNOUHiax0r49PzO','2023-11-19 17:41:27');
+INSERT INTO group_chats (chat_name) VALUES (?) ;
+SELECT LAST_INSERT_ID() AS group_chat_id;
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
