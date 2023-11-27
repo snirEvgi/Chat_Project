@@ -4,6 +4,7 @@ import { createNewChatApi } from "./handlers/createChat";
 import { getAllChatsApi } from "./handlers/getAllChats";
 import { getChatsById, getChatsBySecondId } from "./handlers/getChatsById";
 import { createNewGroupChatApi } from "./handlers/createGroupChat";
+import { getAllGroupChatsByIdApi } from "./handlers/getAllGroupChats";
 
 const chatRouter = express.Router();
 
@@ -19,6 +20,7 @@ chatRouter.get(
     }
   }
 );
+
 chatRouter.get(
   "/cid",
   async function (req: Request, res: Response, next: NextFunction) {
@@ -100,6 +102,20 @@ chatRouter.post(
     } catch (error) {
       console.log(error);
       return next(error);
+    }
+  }
+);
+
+chatRouter.get(
+  "/getGroup",
+  async function (req: Request, res: Response, next: NextFunction) {
+    try {
+      const id = req.query.id;
+      const result = await getAllGroupChatsByIdApi(id as any);
+      if (!result) throw new Error("No Group Chats Found");
+      res.json(result);
+    } catch (error) {
+      console.log(error);
     }
   }
 );

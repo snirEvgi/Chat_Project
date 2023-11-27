@@ -9,16 +9,23 @@ import {
   createNewChatApi,
   fetchChatsById,
   fetchChatsBySecondId,
+  fetchGroupChatsById,
 } from "../../pages/homePage/mainAPI"
 import { Socket, io } from "socket.io-client"
 import GroupChatModal from "../groupChatModal"
+import GroupChatComponent from "../../pages/groupChat"
 
 const List = (props: any) => {
   const [selectedChatId, setSelectedChatId] = useState<number | null>(null)
+  const [selectedGroupChatId, setSelectedGroupChatId] = useState<number | null>(
+    null,
+  )
   const [currentChat, setCurrentChat] = useState<Array<any>>([])
+  const [currentGroupChat, setCurrentGroupChat] = useState<Array<any>>([])
   const [isOn, setIsOn] = useState<boolean>(false)
   const [isGroupOn, setIsGroupOn] = useState<boolean>(false)
   const [chats, setChats] = useState<Array<any>>([])
+  const [groupChats, setGroupChats] = useState<Array<any>>([])
   const userData = JSON.parse(localStorage.getItem("userRecord") as any)
   const token = localStorage.getItem("token")
   const [socket, setSocket] = useState<Socket>()
@@ -77,6 +84,13 @@ const List = (props: any) => {
     setCurrentChat(chat)
   }
 
+  const groupChatHandler = (groupChat: any) => {
+    setSelectedGroupChatId((prevChatId) =>
+      prevChatId === groupChat.group_chat_id ? null : groupChat.group_chat_id,
+    )
+    setCurrentGroupChat(groupChat)
+  }
+
   const fetchChats = async () => {
     const result = await fetchChatsById(userData?.id)
     const result2 = await fetchChatsBySecondId(userData?.id)
@@ -85,8 +99,14 @@ const List = (props: any) => {
     setChats(result3)
   }
 
+  const fetchGroupChats = async () => {
+    const result = await fetchGroupChatsById(userData?.id)
+    setGroupChats(result)
+  }
+
   useEffect(() => {
     fetchChats()
+    fetchGroupChats()
   }, [])
 
   useEffect(() => {
@@ -98,8 +118,6 @@ const List = (props: any) => {
         newSocket.emit("user-logged-in", userData)
       })
       socket?.on("message", (data) => {
-        console.log(data, "isMsaljdlasjdsljdjsal")
-
         setIsMessageNew(data.name !== userName && data.isNew)
       })
       return () => {
@@ -143,6 +161,15 @@ const List = (props: any) => {
           roomId={selectedChatId}
         />
       )}
+      <div>
+        {selectedGroupChatId !== null && (
+          <GroupChatComponent
+            chatOn={true}
+            currentChat={currentGroupChat}
+            roomId={selectedGroupChatId}
+          />
+        )}
+      </div>
       <div className="flex flex-row h-screen w-1/6 bg-gray-900 absolute top-12 left-0">
         <ul className="list-none mt-4 w-full overflow-y-auto p-2">
           <li className=" mb-2 p-3  bg-gray-800 rounded-2xl ">
@@ -159,11 +186,18 @@ const List = (props: any) => {
               onClick={() => {
                 setIsGroupOn(!isGroupOn)
                 setIsOn(false)
-                setShowGroupChatModal(true)
               }}
               className="cursor-pointer mx-2 border-[2px] hover:bg-gray-600 border-teal-400 rounded-3xl font-bold p-2 text-teal-400"
             >
               <i className="pi pi-users"></i>
+            </span>
+            <span
+              onClick={() => {
+                setShowGroupChatModal(true)
+              }}
+              className="cursor-pointer mx-2 border-[2px] hover:bg-gray-600 border-teal-400 rounded-3xl font-bold p-2 text-teal-400"
+            >
+              <i className="pi pi-user-plus"></i>
             </span>
           </li>
           <div>
@@ -195,16 +229,31 @@ const List = (props: any) => {
               </ul>
             )}
 
-            {isGroupOn && (
-              <ul className="list-none mt-4 w-full overflow-y-auto p-2">
-                <GroupChatModal
-                  visible={showGroupChatModal}
-                  onClose={handleGroupOnClose}
-                  onCreate={handleCreateGroupChat}
-                />
-                <div className="mt-4">Select Group :</div>
-              </ul>
-            )}
+            <ul className="list-none mt-4 w-full overflow-y-auto p-2">
+              <GroupChatModal
+                visible={showGroupChatModal}
+                onClose={handleGroupOnClose}
+                onCreate={handleCreateGroupChat}
+              />
+              {isGroupOn && (
+                <div>
+                  {" "}
+                  <div className="mt-4">Select Group :</div>
+                  {groupChats.map((groupChat: any) => (
+                    <li
+                      key={groupChat.group_chat_id}
+                      onClick={() => groupChatHandler(groupChat)}
+                      className="cursor-pointer mb-2 p-2  bg-gray-800 rounded-2xl"
+                    >
+                      <span className=" text-teal-400 ">
+                        {" "}
+                        {groupChat.chat_name}
+                      </span>
+                    </li>
+                  ))}
+                </div>
+              )}
+            </ul>
           </div>
           {chats.map((chat: any) => (
             <li

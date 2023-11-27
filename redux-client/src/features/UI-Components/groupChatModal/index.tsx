@@ -55,8 +55,6 @@ const GroupChatModal: React.FC<GroupChatModalProps> = (props) => {
     }
   }
 
-  console.log(selectedUsers, "selected users")
-
   return (
     <div className={`group-chat-modal ${props.visible ? "block" : "hidden"}`}>
       <div className="text-black fixed inset-0 overflow-y-auto">

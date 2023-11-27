@@ -70,6 +70,15 @@ async function createNewGroupChatApi(
   }
 }
 
+async function fetchGroupChatsById(id: number): Promise<any> {
+  try {
+    const result = await axios.get(`${url}/chat/getGroup?id=${id}`)
+    return result.data
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 export {
   fetchAllChats,
   fetchSingleChat,
@@ -79,4 +88,5 @@ export {
   fetchChatsById,
   fetchChatsBySecondId,
   createNewGroupChatApi,
+  fetchGroupChatsById,
 }

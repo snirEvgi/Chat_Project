@@ -92,6 +92,15 @@ CREATE TABLE IF NOT EXISTS group_chat_members (
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE  
 );
 
+CREATE TABLE IF NOT EXISTS group_chat_messages (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(45) DEFAULT NULL,
+  text VARCHAR(450) DEFAULT NULL,
+  group_chat_id INT DEFAULT NULL,
+  time VARCHAR(100) DEFAULT NULL,
+  FOREIGN KEY (group_chat_id) REFERENCES group_chats(group_chat_id) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 --
 -- Table structure for table `users`
 --
@@ -120,7 +129,6 @@ CREATE TABLE `users` (
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
 INSERT INTO `users` VALUES (1,'Admin','Admin','init@init.com','1234','user','1234','2023-11-11 13:00:40'),(2,'Stas','Shubaev','init2@init.com','1234','admin','1234','2023-11-11 13:00:40'),(3,'Maor','Sheiman','root@root.com','$2b$10$rIQzPtjxLJqXnSNmiIpMDu440kLkSEiUEG7gv9efRLADqFjk7mf/G','user','$2b$10$rIQzPtjxLJqXnSNmiIpMDu','2023-11-11 13:21:52'),(4,'Yuval','Chen','yuval@gmail.com','$2b$10$x2.PtgNP02GIKnRS/VMei.dtK6sppsXJV98/iv1aFmX5g/7U9ZrSG','user','$2b$10$x2.PtgNP02GIKnRS/VMei.','2023-11-12 15:53:55'),(5,'Beber','Snir','admin@gmail.com','$2b$10$snj6ITvHusH/Rwk.VezUWeBY/m/eK8/AZSrflSadGJix33RpzcYGS','user','$2b$10$snj6ITvHusH/Rwk.VezUWe','2023-11-14 16:16:52'),(6,'Snir','Evgi','snirevg@gmail.com','$2b$10$3Ia1AJnWNOUHiax0r49PzOp/6VI1l5.sBJAxGpka3p303lzZYaDW6','user','$2b$10$3Ia1AJnWNOUHiax0r49PzO','2023-11-19 17:41:27');
-INSERT INTO group_chats (chat_name) VALUES (?) ;
 SELECT LAST_INSERT_ID() AS group_chat_id;
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;

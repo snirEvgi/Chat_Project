@@ -1,0 +1,23 @@
+.typingIndicator {
+    color: #888; 
+    font-style: italic;
+    margin-top: 5px;
+  }
+  .messageBubble {
+    padding: 8px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    word-wrap: break-word;
+  }
+  
+  .sentMessage {
+    background-color: #3498db;
+    align-self: flex-end;
+  }
+  
+  .receivedMessage {
+    color: black;
+  
+    background-color: #f2f2f2;
+   
+  }
