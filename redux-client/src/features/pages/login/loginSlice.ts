@@ -19,7 +19,7 @@ export const loginUser = createAsyncThunk(
 )
 
 interface ILogin {
-  user: null | any
+  user: null | LoginCredentials
   error: undefined | string
   status: "idle" | "loading" | "failed" | "fulfilled"
 }

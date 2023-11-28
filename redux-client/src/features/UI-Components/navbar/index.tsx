@@ -46,12 +46,17 @@ function Navbar() {
   }
 
   return (
-    <div className=' border-y border-gray-900 flex justify-between items-center h-12 max-w-full mx-auto px-3 text-white'>
-    <h1 onClick={handleNavigation} className='w-full text-3xl p-1 font-bold'>CHAT.</h1>
-    <ul className='hidden md:flex list-none' >
-      <li onClick={handleLogout} className='p-4 cursor-pointer'>Logout</li>
-    </ul>
-    
+    <div className=" border-y border-gray-900 flex justify-between items-center h-12 max-w-full mx-auto px-3 text-white">
+      <h1 onClick={handleNavigation} className="w-full text-3xl p-1 font-bold">
+        CHAT.
+      </h1>
+      {token && (
+        <ul className="hidden md:flex list-none">
+          <li onClick={handleLogout} className="p-4 cursor-pointer">
+            Logout
+          </li>
+        </ul>
+      )}
     </div>
   )
 }

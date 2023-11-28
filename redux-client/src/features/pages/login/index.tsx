@@ -80,6 +80,8 @@ function Login() {
 
       if (loginUser.fulfilled.match(response)) {
         const exp = response?.payload?.expiration
+        console.log(response);
+        
 
         localStorage.setItem("exp", exp)
         localStorage.setItem("userRecord", JSON.stringify(userRecord))
@@ -89,10 +91,20 @@ function Login() {
 
         navigate("/home")
       } else {
-        handleLoginError(response?.payload)
+        toast.current?.show({
+          severity: "error",
+          summary: "Login Failed",
+          detail: "Login failed. Please try again.",
+        })
+        console.error("Login failed:", response.payload)
       }
     } catch (error) {
-      handleLoginError(error)
+      toast.current?.show({
+        severity: "error",
+        summary: "Login Failed",
+        detail: "Login failed. Please try again.",
+      })
+      console.error("Login failed:", error)
     } finally {
       setIsLoading(false)
     }
