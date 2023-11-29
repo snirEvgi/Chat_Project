@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 import {
   createNewGroupChatApi,
   getAllUsersApi,
 } from "../../pages/homePage/mainAPI"
+import { Link, useNavigate } from "react-router-dom"
 
 interface GroupChatModalProps {
   visible: boolean
@@ -16,9 +17,13 @@ interface User {
 }
 
 const GroupChatModal: React.FC<GroupChatModalProps> = (props) => {
-  const [users, setUsers] = useState<string[]>([])
-  const [selectedUsers, setSelectedUsers] = useState<string[]>([])
+  const [users, setUsers] = useState<User[]>([])
+  const userRecord = JSON.parse(localStorage.getItem("userRecord") as any)
+  const [selectedUsers, setSelectedUsers] = useState<string[]>(
+    userRecord ? [userRecord.firstName + " " + userRecord?.lastName] : [],
+  )
   const [chatName, setChatName] = useState("")
+  const navigate = useNavigate()
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -28,7 +33,7 @@ const GroupChatModal: React.FC<GroupChatModalProps> = (props) => {
           id: user.id,
           name: `${user.firstName} ${user.lastName}`,
         }))
-        setUsers(usersData as any)
+        setUsers(usersData)
       } catch (error) {
         console.error("Error fetching users:", error)
       }
@@ -49,15 +54,36 @@ const GroupChatModal: React.FC<GroupChatModalProps> = (props) => {
     const validUserIds = selectedUserIds.filter((id) => id !== null) as string[]
 
     try {
-      await createNewGroupChatApi(chatName, selectedUsers)
+      await createNewGroupChatApi(chatName, validUserIds)
+      // Call the onCreate prop with validUserIds
+      props.onCreate(validUserIds)
     } catch (error) {
       console.error("Error creating group chat:", error)
+    } finally {
+      navigate("/home")
+    }
+  }
+
+  const handleUserClick = (userName: string) => {
+    const name = userRecord?.firstName + " " + userRecord?.lastName
+    if (selectedUsers.includes(userName)) {
+      if (userName !== name) {
+        setSelectedUsers((prevUsers) =>
+          prevUsers.filter((user) => user !== userName),
+        )
+      }
+    } else {
+      setSelectedUsers((prevUsers) => [...prevUsers, userName])
     }
   }
 
   return (
-    <div className={`group-chat-modal ${props.visible ? "block" : "hidden"}`}>
-      <div className="text-black fixed inset-0 overflow-y-auto">
+    <div
+      className={`group-chat-modal custom-modal ${
+        props.visible ? "block" : "hidden"
+      }`}
+    >
+      <div className="fixed inset-0 overflow-y-auto">
         <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
           <div className="fixed inset-0 transition-opacity" aria-hidden="true">
             <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
@@ -76,7 +102,7 @@ const GroupChatModal: React.FC<GroupChatModalProps> = (props) => {
                     className="text-lg leading-6 font-medium text-gray-900"
                     id="modal-title"
                   >
-                    Group Chat
+                    New Group Chat
                   </h3>
                   <div className="mt-2">
                     <label className="text-gray-600">Group Chat Name:</label>
@@ -84,32 +110,32 @@ const GroupChatModal: React.FC<GroupChatModalProps> = (props) => {
                       value={chatName}
                       onChange={(e: any) => setChatName(e.target.value)}
                       type="text"
-                      className="mt-1 p-2 w-full"
+                      className="mt-1 p-2 w-full bg-slate-500"
                     />
                   </div>
                 </div>
               </div>
             </div>
             <div className="mt-2">
-              <label className="text-gray-600">Select Users:</label>
-              <select
-                multiple
-                value={selectedUsers}
-                onChange={(e) => {
-                  const selectedOptions = Array.from(
-                    e.target.selectedOptions,
-                    (option) => option.value,
-                  )
-                  setSelectedUsers(selectedOptions)
-                }}
-                className="mt-1 p-2 w-full"
-              >
-                {users.map((user: any, index) => (
-                  <option key={index} value={user.id}>
+              <label className="text-gray-600 ml-6">Select Users:</label>
+              <div className="flex flex-wrap gap-2 mt-1 bg-gray-100 p-2 rounded">
+                {" "}
+                {users.map((user: User) => (
+                  <div
+                    key={user.id}
+                    onClick={() => {
+                      handleUserClick(user.name)
+                    }}
+                    className={`p-2 cursor-pointer border rounded ${
+                      selectedUsers.includes(user.name)
+                        ? "bg-teal-300"
+                        : "bg-black"
+                    }`}
+                  >
                     {user.name}
-                  </option>
+                  </div>
                 ))}
-              </select>
+              </div>
             </div>
             <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
               <button
@@ -124,9 +150,9 @@ const GroupChatModal: React.FC<GroupChatModalProps> = (props) => {
               <button
                 onClick={props.onClose}
                 type="button"
-                className="mt-3 w-full inline-flex justify-center items-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 sm:mt-0 sm:w-auto sm:text-sm"
+                className="mt-3 w-full inline-flex justify-center rounded-md border border-teal-800 shadow-sm px-4 py-2 bg-teal-800 text-base font-medium text-white hover:bg-teal-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-800 sm:ml-3 sm:w-auto sm:text-sm"
               >
-                <span className="inline-block align-middle">Cancel</span>
+                Cancel
               </button>
             </div>
           </div>

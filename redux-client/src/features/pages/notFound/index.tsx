@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import './NotFound.css';
+import  { useEffect, useState } from 'react';
 
 
 export default function NotFound() {

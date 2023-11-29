@@ -49,6 +49,11 @@ function Navbar() {
     <div className=" border-y border-gray-900 flex justify-between items-center h-12 max-w-full mx-auto px-3 text-white">
       <h1 onClick={handleNavigation} className="w-full text-3xl p-1 font-bold">
         CHAT.
+        {token && (
+          <span className=" text-sm ml-5 text-teal-700">
+            Welcome {userRecord?.firstName + " " + userRecord?.lastName}
+          </span>
+        )}
       </h1>
       {token && (
         <ul className="hidden md:flex list-none">

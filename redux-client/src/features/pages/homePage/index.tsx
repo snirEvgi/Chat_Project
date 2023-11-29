@@ -13,7 +13,6 @@ import List from "../../UI-Components/list/list"
 
 import {
   createNewChatApi,
-  fetchAllChats,
   fetchChatsById,
   fetchSingleChat,
   getAllUsersApi,
@@ -62,7 +61,7 @@ const HomePage = (props: any) => {
   }
 
   return (
-    <div className=" overflow-y-hidden">
+    <div className=" max-w-screen-xl overflow-y-hidden">
       <div className="">
         <div className="overflow-y-hidden">
           <List chats={chats} onClick={handleChatClick} users={users} />

@@ -5,6 +5,8 @@ import { sendMessage } from "../singleChat/singleChatSlice"
 import { getMessages } from "../singleChat/singleChatAPI"
 import { useAppDispatch } from "../../../app/hooks"
 import { getGroupMessages, postNewGroupMessage } from "./groupChatAPI"
+import Picker from '@emoji-mart/react'
+import data from '@emoji-mart/data'
 
 function GroupChatComponent(props: any) {
   const dispatch = useAppDispatch()
@@ -13,7 +15,7 @@ function GroupChatComponent(props: any) {
   const [onlineUserInRoomData, setOnlineUserInRoomData] = useState<Array<any>>(
     [],
   )
-
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [chatRows, setChatRows] = useState<any[]>([])
   const [oldChatRows, setOldChatRows] = useState<any[]>([])
   const [chat, setChat] = useState<any>({})
@@ -30,7 +32,6 @@ function GroupChatComponent(props: any) {
     localStorage.getItem("onlineUsers") as any,
   )
   const currentChat = props.currentChat
-
   const usersData = onlineUsersGlobal.filter((user: any) => {
     return user?.id !== userData?.id
   })
@@ -47,7 +48,13 @@ function GroupChatComponent(props: any) {
     onlineUserInRoomData.find((user: any) => {
       return user?.name === userName
     }) || []
-
+    const toggleEmojiPicker = () => {
+      setShowEmojiPicker(!showEmojiPicker);
+    };
+  
+    const handleEmojiSelect = (emoji:any) => {
+      setMessage((prevMessage) => prevMessage + emoji.native);
+    };
   const handlerActivity = () => {
     socket?.emit("activity", userName)
   }
@@ -55,7 +62,7 @@ function GroupChatComponent(props: any) {
     scrollToBottom()
     try {
       const history = await getGroupMessages(props.roomId)
-      
+
       setOldChatRows(history)
     } catch (error) {
       console.log(error)
@@ -175,76 +182,63 @@ function GroupChatComponent(props: any) {
   }
 
   return (
-    <div className="p-4  mt-6 max-h-[700px] md:min-w-[200px] lg:min-w-[600px] min-h-[700px] relative ml-72">
-      <div
-        className=" md:min-w-[200px] lg:min-w-[1020px] lg:absolute  lg:border-y p-3
-             bg-slate-700 border-gray-900 lg:flex justify-start items-center
-            z-10  h-12 max-w-full rounded-2xl  px-3 text-white  border gap-80"
-      >
-        <h3 className=" flex gap-2">{prepCurrentChatData.name} </h3>
+    <div className="flex flex-col max-h-[40rem] min-h-[40rem] w-full lg:w-2/3 mx-auto p-4 mt-6 bg-gray-900 rounded-2xl shadow-lg">
+      <div className="flex justify-between items-center bg-gray-900 px-4 py-2 rounded-t-2xl border-b border-gray-600">
+        <h3 className=" text-xl text-white font-semibold">
+          {prepCurrentChatData.name}{" "}
+        </h3>
         {isTyping && (
-          <div className="text-white text-base ">{typingUser} is typing...</div>
+          <div className="text-white text-sm ">{typingUser} is typing...</div>
+        )}
+        {isMessageNew ? (
+          <div className="p-2 text-green-400 text-center">
+            {`You Have (${chatRows.length}) New Messages`}
+          </div>
+        ) : (
+          <></>
         )}
       </div>
       <div
         ref={messagesRef}
-        className="  bg-gray-900 p-2 lg:w-[80%] h-[600px] max-h-[600px] min-h-[600px] md:min-w-[200px] lg:min-w-[600px] overflow-y-auto overflow-x-hidden rounded-2xl"
+        className=" flex-grow overflow-y-auto p-2 space-y-2 bg-gray-00 bg-opacity-80 rounded-b-2xl"
       >
         {props.chatOn ? (
           <>
             <div className="">
-              {oldChatRows.map((row, index) => (
+              {oldChatRows.concat(chatRows).map((row, index) => (
                 <div
                   key={index}
-                  className={` lg:max-w-[380px] break-words p-2 rounded-xl m-2 md:max-w-[200px] ${
+                  className={`break-words p-2 rounded-md m-2 text-white max-w-[80%] ${
                     row.name === userName
-                      ? "bg-teal-700"
-                      : "bg-white text-black relative left-[600px]"
+                      ? "bg-teal-600 ml-auto" : "bg-[#1e293b] mr-auto"
                   }`}
                 >
-                  <div className="text-center w-full border-b border-gray-900 p-0 m-0 mb-2 text-lg">
+                  <div className="text-sm mb-1">
                     {row.name === userName ? "You" : row.name}
                   </div>
-                  <br />
-                  <div className=" w-fit h-fit p-1 mb-1">{row.text}</div>
-                  <br />
-                  <span className=" p-1 text-right text-xs">{row.time}</span>
+                  {row.text}
+                  <div className=" text-right text-xs">{row.time}</div>
                 </div>
               ))}
             </div>
-            {isMessageNew && (
-              <div className="flex justify-around p-1 text-red-500">
-                {" "}
-                {`_____________________ You Have (${chatRows.length}) New Messages _____________________`}
-              </div>
-            )}
-            {chatRows.map((row, index) => (
-              <div
-                key={index}
-                className={` max-w-[480px] break-words p-2 rounded-xl m-2 ${
-                  row.name === userName
-                    ? "bg-teal-700"
-                    : "bg-white text-black relative left-[600px]"
-                }`}
-              >
-                <div className="text-center w-full border-b border-gray-900 p-0 m-0 mb-2 text-lg">
-                  {row.name === userName ? "You" : row.name}
-                </div>
-                <br />
-                <div className=" w-fit h-fit p-1 mb-1">{row.text}</div>
-                <br />
-                <span className=" p-1 text-right text-xs">{row.time}</span>
-              </div>
-            ))}
           </>
         ) : (
-          <div className="chatHistory"> Choose a chat...</div>
+          <div className="text-center text-white"> Choose a chat...</div>
         )}
       </div>
-      <div className="">
+      <div className="relative">
+      {showEmojiPicker && (
+        <div className="absolute m-0 bottom-[1rem] right-[0rem] opacity-80 flex ">
+          <Picker data={data} onEmojiSelect={handleEmojiSelect} />
+        </div>
+      )}
+      </div>
+      
+      <div className="flex justify-between items-center p-2  rounded-b-2xl">
         <input
-          className="text-black lg:w-[80%] p-2 border border-gray-300 rounded"
+          className="flex-grow p-2 bg-gray-700 border border-gray-600 rounded-l-md text-white focus:outline-none focus:ring-none"
           type="text"
+          placeholder="Type a message..."
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={(e) => {
@@ -253,12 +247,19 @@ function GroupChatComponent(props: any) {
           }}
         />
         <button
-          className="text-black relative right-10 p-2 font-bold"
+          className="bg-teal-600 text-white p-2 rounded-r-md"
           onClick={handleSendMessage}
         >
           {`>>`}
         </button>
+      <button
+        className="bg-gray-700 text-white p-2 rounded-md ml-2"
+        onClick={toggleEmojiPicker}
+      >
+        😀
+      </button>
       </div>
+   
     </div>
   )
 }

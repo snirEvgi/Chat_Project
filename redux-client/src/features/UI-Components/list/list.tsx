@@ -1,9 +1,8 @@
 import React, { useEffect, useRef, useState } from "react"
-import { Panel } from "primereact/panel"
-import { ScrollPanel } from "primereact/scrollpanel"
 import "./list.css"
 import SingleChatComponent from "../../pages/singleChat"
-import { Button } from "primereact/button"
+import online from "../../images/online.png"
+import offline from "../../images/offline.png"
 import {
   IChat,
   createNewChatApi,
@@ -23,6 +22,8 @@ const List = (props: any) => {
   const [currentChat, setCurrentChat] = useState<Array<any>>([])
   const [currentGroupChat, setCurrentGroupChat] = useState<Array<any>>([])
   const [isOn, setIsOn] = useState<boolean>(false)
+  const [isSingleChatOn, setIsSingleChatOn] = useState<boolean>(false)
+  const [isGroupChatOn, setIsGroupChatOn] = useState<boolean>(false)
   const [isGroupOn, setIsGroupOn] = useState<boolean>(false)
   const [chats, setChats] = useState<Array<any>>([])
   const [groupChats, setGroupChats] = useState<Array<any>>([])
@@ -31,6 +32,7 @@ const List = (props: any) => {
   const [socket, setSocket] = useState<Socket>()
   const [isMessageNew, setIsMessageNew] = useState<boolean>(false)
   const [showGroupChatModal, setShowGroupChatModal] = useState<boolean>(false)
+  const [isCreateChatCalled, setIsCreateChatCalled] = useState(false);
   const groupChatNameRef = useRef<HTMLInputElement>(null)
 
   const handleGroupChatIconClick = () => {
@@ -40,10 +42,6 @@ const List = (props: any) => {
   const handleCreateGroupChat = () => {
     setShowGroupChatModal(true)
     const groupChatName = groupChatNameRef.current?.value
-    // Perform any validations or checks
-    // ...
-
-    // Close the modal
     setShowGroupChatModal(false)
   }
 
@@ -51,36 +49,32 @@ const List = (props: any) => {
   const onlineUsers =
     JSON.parse(localStorage.getItem("onlineUsers") as any) || []
 
-  const usersData = props.users.filter((user: any) => {
-    return user?.id !== userData?.id
-  })
+    
+    const usersData = props.users.filter((user: any) => {
+      return user?.id !== userData?.id
+    })
+    const filteredUsersData = usersData.filter((user: any) => {
+      return !chats.some((cUser: any) => cUser.firstUserId  === user?.id) && !chats.some((cUser: any) => cUser.secondUserId  === user?.id)
+    })
 
-  const filteredUsersData = usersData.filter((user: any) => {
-    return !chats.some((cUser: any) => cUser?.secondUserId === user?.id)
-  })
 
-  const isUserOnline = usersData.map((user: any) =>
+  const isUserOnline = filteredUsersData.map((user: any) =>
     onlineUsers.some((onlineUser: any) => onlineUser?.id === user?.id),
   )
-  // const prepCurrentChatData = {
-  //   name:
-  //     userData.id === currentChat.firstUserId
-  //       ? currentChat.secondUserName
-  //       : currentChat.firstUserName,
-  //   id:
-  //     userData.id === currentChat.firstUserId
-  //       ? currentChat.secondUserId
-  //       : currentChat.firstUserId,
-  // }
-  // const isFriendOnline: any =
-  //   usersData.find((user: any) => {
-  //     return user.id === prepCurrentChatData?.id
-  //   }) || []
 
+const onlineUsersInList = chats.map((c:any)=>{
+  return onlineUsers.some((onlineUser: any) => onlineUser?.id === (userName === c?.firstUserName ? c?.secondUserId : c?.firstUserId))
+})||[]
+
+  
   const chatHandler = (chat: any) => {
     setSelectedChatId((prevChatId) =>
       prevChatId === chat.chatId ? null : chat.chatId,
     )
+    if (selectedChatId !== null) {
+      isSingleChatOn
+    }
+    setSelectedGroupChatId(null)
     setCurrentChat(chat)
   }
 
@@ -88,6 +82,8 @@ const List = (props: any) => {
     setSelectedGroupChatId((prevChatId) =>
       prevChatId === groupChat.group_chat_id ? null : groupChat.group_chat_id,
     )
+    setSelectedChatId(null)
+
     setCurrentGroupChat(groupChat)
   }
 
@@ -141,36 +137,44 @@ const List = (props: any) => {
   }
 
   const createNewChatHandler = async (user: any) => {
-    const dataForChat = {
-      firstUserId: userData?.id,
-      secondUserId: user?.id,
-      firstUserName: userName,
-      secondUserName: user?.firstName + " " + user.lastName,
-    }
+    if (!isCreateChatCalled) {
+      const dataForChat = {
+        firstUserId: userData?.id,
+        secondUserId: user?.id,
+        firstUserName: userName,
+        secondUserName: user?.firstName + " " + user.lastName,
+      };
+  
+      setIsCreateChatCalled(true);
+try {
+  
+      await createNewChat(dataForChat as IChat)
+      await fetchChats()
+} catch (error) {
+  console.log(error);
+  
+}finally{
+  setIsCreateChatCalled(false);
 
-    await createNewChat(dataForChat as IChat)
-    await fetchChats()
+}  }
   }
-
   return (
-    <div className="">
-      {selectedChatId !== null && (
+    <div className=" ml-[12rem] md:ml-[14rem] lg:ml-[18rem]  ">
+      {selectedChatId !== null  &&(
         <SingleChatComponent
           chatOn={true}
           currentChat={currentChat}
           roomId={selectedChatId}
         />
       )}
-      <div>
-        {selectedGroupChatId !== null && (
-          <GroupChatComponent
-            chatOn={true}
-            currentChat={currentGroupChat}
-            roomId={selectedGroupChatId}
-          />
-        )}
-      </div>
-      <div className="flex flex-row h-screen w-1/6 bg-gray-900 absolute top-12 left-0">
+      {selectedGroupChatId !== null &&  (
+        <GroupChatComponent
+          chatOn={true}
+          currentChat={currentGroupChat}
+          roomId={selectedGroupChatId}
+        />
+      )}
+      <div className="flex flex-row h-screen min-w-1/6 bg-gray-900 absolute top-12 left-0">
         <ul className="list-none mt-4 w-full overflow-y-auto p-2">
           <li className=" mb-2 p-3  bg-gray-800 rounded-2xl ">
             <span
@@ -194,6 +198,8 @@ const List = (props: any) => {
             <span
               onClick={() => {
                 setShowGroupChatModal(true)
+                setIsGroupOn(false)
+                setIsOn(false)
               }}
               className="cursor-pointer mx-2 border-[2px] hover:bg-gray-600 border-teal-400 rounded-3xl font-bold p-2 text-teal-400"
             >
@@ -214,9 +220,25 @@ const List = (props: any) => {
                         key={user.id}
                         className="cursor-pointer mb-2 p-3  bg-gray-800 rounded-2xl"
                       >
-                        <span className=" hover:bg-gray-600 border-teal-400 rounded-3xl font-bold  text-teal-400">
+                        <span className="flex justify-between hover:bg-gray-600 border-teal-400 rounded-3xl font-bold  text-teal-400">
                           {` ${user.firstName} ${user.lastName}`}{" "}
-                          {isUserOnline[index] ? "Online" : "Offline"}
+                            {isUserOnline[index] ? (
+                              <img
+                                height={20}
+                                width={20}
+                                src={online}
+                                alt="online"
+                                className="text-end"
+                              />
+                            ) : (
+                              <img
+                                height={20}
+                                width={20}
+                                src={offline}
+                                alt="offline"
+                                className="text-end scale-90"
+                              />
+                            )}
                         </span>
                       </li>
                     </div>
@@ -249,17 +271,18 @@ const List = (props: any) => {
                         {" "}
                         {groupChat.chat_name}
                       </span>
+                      
                     </li>
                   ))}
                 </div>
               )}
             </ul>
           </div>
-          {chats.map((chat: any) => (
+          {chats.map((chat: any,index:number) => (
             <li
               key={chat.chatId}
               onClick={() => chatHandler(chat)}
-              className="cursor-pointer mb-2 p-2  bg-gray-800 rounded-2xl"
+              className="cursor-pointer mb-2 p-2 flex justify-around  bg-gray-800 rounded-2xl"
             >
               <span className=" text-teal-400 ">
                 {" "}
@@ -267,6 +290,23 @@ const List = (props: any) => {
                   ? chat.secondUserName
                   : chat.firstUserName}
               </span>
+              {onlineUsersInList[index] ? (
+                              <img
+                                height={20}
+                                width={20}
+                                src={online}
+                                alt="online"
+                                className="text-end"
+                              />
+                            ) : (
+                              <img
+                                height={20}
+                                width={20}
+                                src={offline}
+                                alt="offline"
+                                className="text-end scale-90"
+                              />
+                            )}
             </li>
           ))}
         </ul>
