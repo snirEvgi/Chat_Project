@@ -98,12 +98,12 @@ const GroupChatModal: React.FC<GroupChatModalProps> = (props) => {
             <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
               <div className="sm:flex sm:items-start">
                 <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                  <h3
-                    className="text-lg leading-6 font-medium text-gray-900"
+                  <h2
+                    className="text-lg text-center mb-5 leading-6 font-medium text-gray-900"
                     id="modal-title"
                   >
                     New Group Chat
-                  </h3>
+                  </h2>
                   <div className="mt-2">
                     <label className="text-gray-600">Group Chat Name:</label>
                     <input
