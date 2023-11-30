@@ -23,7 +23,7 @@ const List = (props: any) => {
   const [currentGroupChat, setCurrentGroupChat] = useState<Array<any>>([])
   const [isOn, setIsOn] = useState<boolean>(false)
   const [isSingleChatOn, setIsSingleChatOn] = useState<boolean>(false)
-  const [isGroupChatOn, setIsGroupChatOn] = useState<boolean>(false)
+  const [isListShown, setIsListShown] = useState<boolean>(true)
   const [isGroupOn, setIsGroupOn] = useState<boolean>(false)
   const [chats, setChats] = useState<Array<any>>([])
   const [groupChats, setGroupChats] = useState<Array<any>>([])
@@ -32,8 +32,10 @@ const List = (props: any) => {
   const [socket, setSocket] = useState<Socket>()
   const [isMessageNew, setIsMessageNew] = useState<boolean>(false)
   const [showGroupChatModal, setShowGroupChatModal] = useState<boolean>(false)
-  const [isCreateChatCalled, setIsCreateChatCalled] = useState(false);
+  const [isCreateChatCalled, setIsCreateChatCalled] = useState(false)
   const groupChatNameRef = useRef<HTMLInputElement>(null)
+  const totalChats = [...groupChats, ...chats]
+  console.log(totalChats)
 
   const handleGroupChatIconClick = () => {
     setShowGroupChatModal(true)
@@ -43,37 +45,44 @@ const List = (props: any) => {
     setShowGroupChatModal(true)
     const groupChatName = groupChatNameRef.current?.value
     setShowGroupChatModal(false)
+    setSelectedGroupChatId(null)
+
   }
 
   const userName = `${userData?.firstName} ${userData?.lastName}`
   const onlineUsers =
     JSON.parse(localStorage.getItem("onlineUsers") as any) || []
 
-    
-    const usersData = props.users.filter((user: any) => {
-      return user?.id !== userData?.id
-    })
-    const filteredUsersData = usersData.filter((user: any) => {
-      return !chats.some((cUser: any) => cUser.firstUserId  === user?.id) && !chats.some((cUser: any) => cUser.secondUserId  === user?.id)
-    })
-
+  const usersData = props.users.filter((user: any) => {
+    return user?.id !== userData?.id
+  })
+  const filteredUsersData = usersData.filter((user: any) => {
+    return (
+      !chats.some((cUser: any) => cUser.firstUserId === user?.id) &&
+      !chats.some((cUser: any) => cUser.secondUserId === user?.id)
+    )
+  })
 
   const isUserOnline = filteredUsersData.map((user: any) =>
     onlineUsers.some((onlineUser: any) => onlineUser?.id === user?.id),
   )
 
-const onlineUsersInList = chats.map((c:any)=>{
-  return onlineUsers.some((onlineUser: any) => onlineUser?.id === (userName === c?.firstUserName ? c?.secondUserId : c?.firstUserId))
-})||[]
+  const onlineUsersInList =
+    chats.map((c: any) => {
+      return onlineUsers.some(
+        (onlineUser: any) =>
+          onlineUser?.id ===
+          (userName === c?.firstUserName ? c?.secondUserId : c?.firstUserId),
+      )
+    }) || []
 
-  
+  console.log(onlineUsersInList, "aassadasdas")
+
   const chatHandler = (chat: any) => {
     setSelectedChatId((prevChatId) =>
       prevChatId === chat.chatId ? null : chat.chatId,
     )
-    if (selectedChatId !== null) {
-      isSingleChatOn
-    }
+
     setSelectedGroupChatId(null)
     setCurrentChat(chat)
   }
@@ -135,93 +144,109 @@ const onlineUsersInList = chats.map((c:any)=>{
     setShowGroupChatModal(false)
     setIsGroupOn(false)
   }
-
+  const handleLogout = async () => {
+    socket?.emit("user-logged-out", userData)
+    localStorage.removeItem("token")
+    localStorage.removeItem("userRecord")
+    localStorage.removeItem("exp")
+    localStorage.removeItem("onlineUsers")
+    window.location.href = "/home"
+    socket?.disconnect()
+  }
   const createNewChatHandler = async (user: any) => {
-    if (!isCreateChatCalled) {
+if (!user) return 
       const dataForChat = {
         firstUserId: userData?.id,
         secondUserId: user?.id,
         firstUserName: userName,
         secondUserName: user?.firstName + " " + user.lastName,
-      };
-  
-      setIsCreateChatCalled(true);
-try {
-  
-      await createNewChat(dataForChat as IChat)
-      await fetchChats()
-} catch (error) {
-  console.log(error);
-  
-}finally{
-  setIsCreateChatCalled(false);
-
-}  }
+      }
+      try {
+        await createNewChat(dataForChat as IChat)
+        await fetchChats()
+      } catch (error) {
+        console.log(error)
+        throw error
+    }
   }
   return (
-    <div className=" ml-[12rem] md:ml-[14rem] lg:ml-[18rem]  ">
-      {selectedChatId !== null  &&(
+    <div className=" ml-[2rem] md:ml-[18rem] flex lg:ml-[18rem] xl:ml-[24rem] ">
+    
+      {selectedChatId !== null&& !isListShown  && (
         <SingleChatComponent
           chatOn={true}
           currentChat={currentChat}
           roomId={selectedChatId}
-        />
-      )}
-      {selectedGroupChatId !== null &&  (
+          exitChat={()=>{
+            setSelectedChatId(null)
+            setIsListShown(true)
+          }}
+          />
+          )}
+      {selectedGroupChatId !== null && (
         <GroupChatComponent
-          chatOn={true}
-          currentChat={currentGroupChat}
-          roomId={selectedGroupChatId}
+        chatOn={true}
+        currentChat={currentGroupChat}
+        roomId={selectedGroupChatId}
+        exitChat={()=>{
+          setSelectedGroupChatId(null)
+          setIsListShown(true)
+        }}
+          
         />
       )}
-      <div className="flex flex-row h-screen min-w-1/6 bg-gray-900 absolute top-12 left-0">
-        <ul className="list-none mt-4 w-full overflow-y-auto p-2">
-          <li className=" mb-2 p-3  bg-gray-800 rounded-2xl ">
-            <span
-              onClick={() => {
-                setIsOn(!isOn)
-                setIsGroupOn(false)
-              }}
-              className="cursor-pointer mx-2 border-[2px] hover:bg-gray-600 border-teal-400 rounded-3xl font-bold p-2 text-teal-400"
-            >
-              <i className="pi pi-plus"></i>
-            </span>
-            <span
-              onClick={() => {
-                setIsGroupOn(!isGroupOn)
-                setIsOn(false)
-              }}
-              className="cursor-pointer mx-2 border-[2px] hover:bg-gray-600 border-teal-400 rounded-3xl font-bold p-2 text-teal-400"
-            >
-              <i className="pi pi-users"></i>
-            </span>
-            <span
-              onClick={() => {
-                setShowGroupChatModal(true)
-                setIsGroupOn(false)
-                setIsOn(false)
-              }}
-              className="cursor-pointer mx-2 border-[2px] hover:bg-gray-600 border-teal-400 rounded-3xl font-bold p-2 text-teal-400"
-            >
-              <i className="pi pi-user-plus"></i>
-            </span>
-          </li>
-          <div>
-            {isOn && (
-              <ul className="list-none mt-4 w-full overflow-y-auto p-2">
-                {filteredUsersData.length > 0 ? (
-                  filteredUsersData.map((user: any, index: number) => (
-                    <div
-                      key={user?.email}
-                      className=""
-                      onClick={() => createNewChatHandler(user)}
-                    >
-                      <li
-                        key={user.id}
-                        className="cursor-pointer mb-2 p-3  bg-gray-800 rounded-2xl"
+      
+
+      {isListShown && (
+        <div className="flex flex-row h-screen min-w-1/6 bg-gray-900 absolute top-12 left-0 transition duration-300 ease-in-out ">
+          <ul className="list-none mt-4 min-w-[16rem] overflow-y-auto p-2">
+         
+            <li className=" mb-2 p-3  mt-2 bg-gray-800 rounded-2xl ">
+              <span
+                onClick={() => {
+                  setIsOn(!isOn)
+                  setIsGroupOn(false)
+                }}
+                className="cursor-pointer mx-2  border-[2px] hover:bg-gray-600 border-teal-400 rounded-3xl font-bold p-2 text-teal-400"
+              >
+                <i className="pi pi-plus"></i>
+              </span>
+              
+             
+
+
+              <span
+                onClick={() => {
+                  setShowGroupChatModal(true)
+                  setIsGroupOn(false)
+                  setIsOn(false)
+                }}
+                className="cursor-pointer mx-2 border-[2px] hover:bg-gray-600 border-teal-400 rounded-3xl font-bold p-2 text-teal-400"
+              >
+                <i className="pi pi-user-plus"></i>
+              </span>
+             { token && <span  onClick={() => {
+                handleLogout()
+              }} className="cursor-pointer  mx-2  border-[2px] hover:bg-gray-600 border-teal-400 rounded-3xl font-bold p-2 text-teal-400">
+                Logout
+              </span>}
+            </li>
+            <div>
+              {isOn && (
+                <ul className="list-none mt-4 w-full overflow-y-auto p-2">
+                  {filteredUsersData.length > 0 ? (
+                    filteredUsersData.map((user: any, index: number) => (
+                      <div
+                        key={user?.email}
+                        className="z-10"
+                        onClick={() => createNewChatHandler(user)}
                       >
-                        <span className="flex justify-between hover:bg-gray-600 border-teal-400 rounded-3xl font-bold  text-teal-400">
-                          {` ${user.firstName} ${user.lastName}`}{" "}
+                        <li
+                          key={user.id}
+                          className="cursor-pointer mb-2 p-3  bg-gray-800 rounded-2xl"
+                        >
+                          <span className="flex justify-between hover:bg-gray-600 border-teal-400 rounded-3xl font-bold  text-teal-400">
+                            {` ${user.firstName} ${user.lastName}`}{" "}
                             {isUserOnline[index] ? (
                               <img
                                 height={20}
@@ -239,78 +264,78 @@ try {
                                 className="text-end scale-90"
                               />
                             )}
-                        </span>
-                      </li>
-                    </div>
-                  ))
-                ) : (
-                  <li>
-                    <span>No available users</span>
-                  </li>
-                )}
-              </ul>
-            )}
+                          </span>
+                        </li>
+                      </div>
+                    ))
+                  ) : (
+                    <li>
+                      <span>No available users</span>
+                    </li>
+                  )}
+                </ul>
+              )}
 
-            <ul className="list-none mt-4 w-full overflow-y-auto p-2">
               <GroupChatModal
                 visible={showGroupChatModal}
                 onClose={handleGroupOnClose}
                 onCreate={handleCreateGroupChat}
               />
-              {isGroupOn && (
-                <div>
+
+              {groupChats.map((groupChat: any) => (
+                <li
+                  key={groupChat.group_chat_id}
+                  onClick={() => {
+                    groupChatHandler(groupChat)
+                    setIsListShown(false)
+                  }}
+                  className="cursor-pointer mb-1 p-2  bg-gray-800"
+                >
+                  <span className=" text-teal-400 ">
+                    {" "}
+                    {groupChat.chat_name}
+                  </span>
+                </li>
+              ))}
+            </div>
+            {chats.map((chat: any, index: number) => (
+              <li
+                key={chat.chatId || chat.group_chat_id}
+                onClick={() => {
+                  chatHandler(chat)
+                  setIsListShown(false)
+                }}
+                className="cursor-pointer mb-1 p-2 flex justify-between  bg-gray-800 "
+              >
+                <span className=" text-teal-400 ">
                   {" "}
-                  <div className="mt-4">Select Group :</div>
-                  {groupChats.map((groupChat: any) => (
-                    <li
-                      key={groupChat.group_chat_id}
-                      onClick={() => groupChatHandler(groupChat)}
-                      className="cursor-pointer mb-2 p-2  bg-gray-800 rounded-2xl"
-                    >
-                      <span className=" text-teal-400 ">
-                        {" "}
-                        {groupChat.chat_name}
-                      </span>
-                      
-                    </li>
-                  ))}
-                </div>
-              )}
-            </ul>
-          </div>
-          {chats.map((chat: any,index:number) => (
-            <li
-              key={chat.chatId}
-              onClick={() => chatHandler(chat)}
-              className="cursor-pointer mb-2 p-2 flex justify-around  bg-gray-800 rounded-2xl"
-            >
-              <span className=" text-teal-400 ">
-                {" "}
-                {userData?.id === chat.firstUserId
-                  ? chat.secondUserName
-                  : chat.firstUserName}
-              </span>
-              {onlineUsersInList[index] ? (
-                              <img
-                                height={20}
-                                width={20}
-                                src={online}
-                                alt="online"
-                                className="text-end"
-                              />
-                            ) : (
-                              <img
-                                height={20}
-                                width={20}
-                                src={offline}
-                                alt="offline"
-                                className="text-end scale-90"
-                              />
-                            )}
-            </li>
-          ))}
-        </ul>
-      </div>
+                  {userData?.id === chat.firstUserId
+                    ? chat.secondUserName
+                    : chat.firstUserName || chat.chat_name}
+                </span>
+
+                {onlineUsersInList[index] ? (
+                  <img
+                    height={20}
+                    width={20}
+                    src={online}
+                    alt="online"
+                    className="text-end"
+                  />
+                ) : (
+                  <img
+                    height={20}
+                    width={20}
+                    src={offline}
+                    alt="offline"
+                    className="text-end"
+                  />
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   )
 }

@@ -4,8 +4,8 @@ import { Socket, io } from "socket.io-client"
 import SideBar from "../sidebar"
 import { IRoute, routes } from "../../../App"
 
+export const token = localStorage.getItem("token")
 function Navbar() {
-  const token = localStorage.getItem("token")
   const userRecord = JSON.parse(localStorage.getItem("userRecord") as any)
 
   const [socket, setSocket] = useState<Socket>()
@@ -24,7 +24,7 @@ function Navbar() {
       }
     }
   }, [token, token !== undefined])
-
+  
   if (token) {
     socket?.on("getOnlineUsers", (data) => {
       localStorage.setItem("onlineUsers", JSON.stringify(data.onlineUsers))
@@ -35,7 +35,7 @@ function Navbar() {
   const handleNavigation = async () => {
     navigate("/home")
   }
-  const handleLogout = async () => {
+   const handleLogout = async () => {
     socket?.emit("user-logged-out", userRecord)
     localStorage.removeItem("token")
     localStorage.removeItem("userRecord")
@@ -46,7 +46,7 @@ function Navbar() {
   }
 
   return (
-    <div className=" border-y border-gray-900 flex justify-between items-center h-12 max-w-full mx-auto px-3 text-white">
+    <div className=" border-y border-gray-900 flex  md:justify-start lg:justify-between xl:justify-between items-center h-12 max-w-full mx-auto px-3 text-white">
       <h1 onClick={handleNavigation} className="w-full text-3xl p-1 font-bold">
         CHAT.
         {token && (
@@ -55,13 +55,13 @@ function Navbar() {
           </span>
         )}
       </h1>
-      {token && (
+      {/* {token && (
         <ul className="hidden md:flex list-none">
           <li onClick={handleLogout} className="p-4 cursor-pointer">
             Logout
           </li>
         </ul>
-      )}
+      )} */}
     </div>
   )
 }

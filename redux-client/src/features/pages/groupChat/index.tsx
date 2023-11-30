@@ -182,22 +182,19 @@ function GroupChatComponent(props: any) {
   }
 
   return (
-    <div className="flex flex-col max-h-[40rem] min-h-[40rem] w-full lg:w-2/3 mx-auto p-4 mt-6 bg-gray-900 rounded-2xl shadow-lg">
+    <div className="flex flex-col max-h-[30rem] md:max-h-[35rem] lg:max-h-[40rem] min-h-[24rem] w-fit md:w-full  lg:w-2/3 mx-auto p-4 mt-6 bg-gray-900 rounded-2xl shadow-lg">
       <div className="flex justify-between items-center bg-gray-900 px-4 py-2 rounded-t-2xl border-b border-gray-600">
         <h3 className=" text-xl text-white font-semibold">
           {prepCurrentChatData.name}{" "}
         </h3>
-        {isTyping && (
-          <div className="text-white text-sm ">{typingUser} is typing...</div>
-        )}
-        {isMessageNew ? (
-          <div className="p-2 text-green-400 text-center">
-            {`You Have (${chatRows.length}) New Messages`}
-          </div>
-        ) : (
-          <></>
-        )}
+      <div onClick={props.exitChat}> <i className="pi pi-times"></i> </div>
+
       </div>
+      <div className="p-2">
+        {isTyping && (
+          <div className="text-white text-sm text-center  ">{typingUser} is typing...</div>
+        )}
+        </div>
       <div
         ref={messagesRef}
         className=" flex-grow overflow-y-auto p-2 space-y-2 bg-gray-00 bg-opacity-80 rounded-b-2xl"
