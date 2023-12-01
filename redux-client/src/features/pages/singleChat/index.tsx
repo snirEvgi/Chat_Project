@@ -222,7 +222,6 @@ function SingleChatComponent(props: any) {
         </h3>
        
       <div onClick={props.exitChat}> <i className="pi pi-times"></i> </div>
-
       </div>
       <div className="p-2">
         {isTyping && (
