@@ -1,12 +1,5 @@
 import { useEffect, useState } from "react"
-import {
-  Routes,
-  Route,
-  Link,
-  useNavigate,
-  BrowserRouter as Router,
-  useLocation,
-} from "react-router-dom"
+import { Routes, Route, Link, useNavigate, useLocation } from "react-router-dom"
 import { ProtectedRoute } from "./features/UI-Components/protected-route"
 import { easeOut, motion as m, useInView, useScroll } from "framer-motion"
 import { Avatar } from "primereact/avatar"
@@ -34,6 +27,11 @@ export interface IRoute {
 }
 export const routes: Array<IRoute> = [
   {
+    path: "/login",
+    component: <Login />,
+    key: "login",
+  },
+  {
     path: "/home",
     component: (
       <ProtectedRoute>
@@ -41,11 +39,6 @@ export const routes: Array<IRoute> = [
       </ProtectedRoute>
     ),
     key: "home",
-  },
-  {
-    path: "/login",
-    component: <Login />,
-    key: "login",
   },
   {
     path: "/sign-up",
@@ -61,6 +54,7 @@ export const routes: Array<IRoute> = [
 
 function App() {
   const { scrollYProgress } = useScroll()
+  const navigate = useNavigate()
   const token = localStorage.getItem("token")
   const [onlineUsers, setOnlineUsers] = useState([])
   const userRecord = JSON.parse(localStorage.getItem("userRecord") as any)
@@ -91,9 +85,15 @@ function App() {
     }
   }, [])
 
+  useEffect(() => {
+    if (!token) {
+      navigate("/login")
+    }
+  }, [token])
+
   return (
-    <Router>
-      <Navbar  />
+    <div>
+      <Navbar />
       {/* <m.div className="progressBar" style={{ scaleX: scrollYProgress }} /> */}
       <div>
         <Routes>
@@ -109,7 +109,7 @@ function App() {
           )}
         </Routes>
       </div>
-    </Router>
+    </div>
   )
 }
 

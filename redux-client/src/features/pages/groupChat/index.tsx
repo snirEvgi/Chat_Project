@@ -5,8 +5,8 @@ import { sendMessage } from "../singleChat/singleChatSlice"
 import { getMessages } from "../singleChat/singleChatAPI"
 import { useAppDispatch } from "../../../app/hooks"
 import { getGroupMessages, postNewGroupMessage } from "./groupChatAPI"
-import Picker from '@emoji-mart/react'
-import data from '@emoji-mart/data'
+import Picker from "@emoji-mart/react"
+import data from "@emoji-mart/data"
 
 function GroupChatComponent(props: any) {
   const dispatch = useAppDispatch()
@@ -15,7 +15,7 @@ function GroupChatComponent(props: any) {
   const [onlineUserInRoomData, setOnlineUserInRoomData] = useState<Array<any>>(
     [],
   )
-  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false)
   const [chatRows, setChatRows] = useState<any[]>([])
   const [oldChatRows, setOldChatRows] = useState<any[]>([])
   const [chat, setChat] = useState<any>({})
@@ -28,9 +28,13 @@ function GroupChatComponent(props: any) {
   const [typingUser, setTypingUser] = useState("")
   const [isMessageNew, setIsMessageNew] = useState<boolean>(false)
   const [isMessageNewArray, setIsMessageNewArray] = useState<Array<any>>([])
+  const [loadingHistory, setLoadingHistory] = useState(false)
+  const [sendingMessage, setSendingMessage] = useState(false)
+
   const onlineUsersGlobal = JSON.parse(
     localStorage.getItem("onlineUsers") as any,
   )
+
   const currentChat = props.currentChat
   const usersData = onlineUsersGlobal.filter((user: any) => {
     return user?.id !== userData?.id
@@ -48,17 +52,18 @@ function GroupChatComponent(props: any) {
     onlineUserInRoomData.find((user: any) => {
       return user?.name === userName
     }) || []
-    const toggleEmojiPicker = () => {
-      setShowEmojiPicker(!showEmojiPicker);
-    };
-  
-    const handleEmojiSelect = (emoji:any) => {
-      setMessage((prevMessage) => prevMessage + emoji.native);
-    };
+  const toggleEmojiPicker = () => {
+    setShowEmojiPicker(!showEmojiPicker)
+  }
+
+  const handleEmojiSelect = (emoji: any) => {
+    setMessage((prevMessage) => prevMessage + emoji.native)
+  }
   const handlerActivity = () => {
     socket?.emit("activity", userName)
   }
   const fetchChatHistory = async () => {
+    setLoadingHistory(true)
     scrollToBottom()
     try {
       const history = await getGroupMessages(props.roomId)
@@ -67,6 +72,7 @@ function GroupChatComponent(props: any) {
     } catch (error) {
       console.log(error)
     } finally {
+      setLoadingHistory(false)
     }
   }
 
@@ -149,6 +155,7 @@ function GroupChatComponent(props: any) {
 
   const handleSendMessage = async () => {
     if (socket && message.trim() !== "") {
+      setSendingMessage(true)
       try {
         socket.emit("message", {
           name: userName,
@@ -177,6 +184,7 @@ function GroupChatComponent(props: any) {
         console.error("Error sending message:", error)
       } finally {
         setMessage("")
+        setSendingMessage(false)
       }
     }
   }
@@ -187,14 +195,19 @@ function GroupChatComponent(props: any) {
         <h3 className=" text-xl text-white font-semibold">
           {prepCurrentChatData.name}{" "}
         </h3>
-      <div onClick={props.exitChat}> <i className="pi pi-times"></i> </div>
-
+        <div onClick={props.exitChat}>
+          {" "}
+          <i className="pi pi-times"></i>{" "}
+        </div>
       </div>
       <div className="p-2">
+        {loadingHistory && <div>Loading chat history...</div>}
         {isTyping && (
-          <div className="text-white text-sm text-center  ">{typingUser} is typing...</div>
+          <div className="text-white text-sm text-center  ">
+            {typingUser} is typing...
+          </div>
         )}
-        </div>
+      </div>
       <div
         ref={messagesRef}
         className=" flex-grow overflow-y-auto p-2 space-y-2 bg-gray-00 bg-opacity-80 rounded-b-2xl"
@@ -207,7 +220,8 @@ function GroupChatComponent(props: any) {
                   key={index}
                   className={`break-words p-2 rounded-md m-2 text-white max-w-[80%] ${
                     row.name === userName
-                      ? "bg-teal-600 ml-auto" : "bg-[#1e293b] mr-auto"
+                      ? "bg-teal-600 ml-auto"
+                      : "bg-[#1e293b] mr-auto"
                   }`}
                 >
                   <div className="text-sm mb-1">
@@ -224,13 +238,13 @@ function GroupChatComponent(props: any) {
         )}
       </div>
       <div className="relative">
-      {showEmojiPicker && (
-        <div className="absolute m-0 bottom-[1rem] right-[0rem] opacity-80 flex ">
-          <Picker data={data} onEmojiSelect={handleEmojiSelect} />
-        </div>
-      )}
+        {showEmojiPicker && (
+          <div className="absolute m-0 bottom-[1rem] right-[0rem] opacity-80 flex ">
+            <Picker data={data} onEmojiSelect={handleEmojiSelect} />
+          </div>
+        )}
       </div>
-      
+
       <div className="flex justify-between items-center p-2  rounded-b-2xl">
         <input
           className="flex-grow p-2 bg-gray-700 border border-gray-600 rounded-l-md text-white focus:outline-none focus:ring-none"
@@ -247,16 +261,15 @@ function GroupChatComponent(props: any) {
           className="bg-teal-600 text-white p-2 rounded-r-md"
           onClick={handleSendMessage}
         >
-          {`>>`}
+          {sendingMessage ? "Sending..." : ">>"}
         </button>
-      <button
-        className="bg-gray-700 text-white p-2 rounded-md ml-2"
-        onClick={toggleEmojiPicker}
-      >
-        😀
-      </button>
+        <button
+          className="bg-gray-700 text-white p-2 rounded-md ml-2"
+          onClick={toggleEmojiPicker}
+        >
+          😀
+        </button>
       </div>
-   
     </div>
   )
 }

@@ -6,8 +6,8 @@ import { getMessages } from "./singleChatAPI"
 import { useAppDispatch } from "../../../app/hooks"
 import online from "../../images/online.png"
 import offline from "../../images/offline.png"
-import Picker from '@emoji-mart/react'
-import data from '@emoji-mart/data'
+import Picker from "@emoji-mart/react"
+import data from "@emoji-mart/data"
 function SingleChatComponent(props: any) {
   const dispatch = useAppDispatch()
 
@@ -29,7 +29,8 @@ function SingleChatComponent(props: any) {
   const [isMessageNew, setIsMessageNew] = useState<boolean>(false)
   const [isMessageNewFlag, setIsMessageNewFlag] = useState<boolean>(false)
   const [isMessageNewArray, setIsMessageNewArray] = useState<Array<any>>([])
-  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false)
+  const [loadingMessages, setLoadingMessages] = useState(false)
 
   const onlineUsersGlobal = JSON.parse(
     localStorage.getItem("onlineUsers") as any,
@@ -66,6 +67,7 @@ function SingleChatComponent(props: any) {
     socket?.emit("activity", userName)
   }
   const fetchChatHistory = async () => {
+    setLoadingMessages(true)
     scrollToBottom()
     try {
       const history = await getMessages(props.roomId)
@@ -73,15 +75,16 @@ function SingleChatComponent(props: any) {
     } catch (error) {
       console.log(error)
     } finally {
+      setLoadingMessages(false)
     }
   }
   const toggleEmojiPicker = () => {
-    setShowEmojiPicker(!showEmojiPicker);
-  };
+    setShowEmojiPicker(!showEmojiPicker)
+  }
 
-  const handleEmojiSelect = (emoji:any) => {
-    setMessage((prevMessage) => prevMessage + emoji.native);
-  };
+  const handleEmojiSelect = (emoji: any) => {
+    setMessage((prevMessage) => prevMessage + emoji.native)
+  }
 
   useEffect(() => {
     const initSocket = () => {
@@ -113,9 +116,13 @@ function SingleChatComponent(props: any) {
         if (!isMessageNew && !props.roomId) {
           newMessagesFromOtherUser = []
         }
-        if (chatRows.length === 0 ||chatRows.length === -1 ||chatRows.length > 0) {
+        if (
+          chatRows.length === 0 ||
+          chatRows.length === -1 ||
+          chatRows.length > 0
+        ) {
           setIsMessageNew(false)
-          return 
+          return
         } else {
           setIsMessageNew(data.name !== userName ? data.isNew : false)
         }
@@ -220,29 +227,34 @@ function SingleChatComponent(props: any) {
             )}
           </span>
         </h3>
-       
-      <div onClick={props.exitChat}> <i className="pi pi-times"></i> </div>
+
+        <div onClick={props.exitChat}>
+          {" "}
+          <i className="pi pi-times"></i>{" "}
+        </div>
       </div>
       <div className="p-2">
         {isTyping && (
-          <div className="text-white text-sm text-center  ">{typingUser} is typing...</div>
+          <div className="text-white text-sm text-center  ">
+            {typingUser} is typing...
+          </div>
         )}
-        </div>
+      </div>
       {isMessageNew ? (
         <div className="p-2 text-green-400 text-center">
-          {`You Have (${newMessagesFromOtherUser.length +1}) New Messages`}
+          {`You Have (${newMessagesFromOtherUser.length + 1}) New Messages`}
         </div>
       ) : (
         <></>
       )}
- 
-      
+
       <div
         ref={messagesRef}
         className="flex-grow overflow-y-auto p-2 space-y-2 bg-gray-00 bg-opacity-80 rounded-b-2xl"
       >
         {props.chatOn ? (
           <>
+            {loadingMessages && <div>Loading messages...</div>}
             {oldChatRows.concat(chatRows).map((row, index) => (
               <div
                 key={index}
@@ -265,11 +277,11 @@ function SingleChatComponent(props: any) {
         )}
       </div>
       <div className="relative">
-      {showEmojiPicker && (
-        <div className="absolute m-0 bottom-[1rem] right-[0rem] opacity-80 flex ">
-          <Picker data={data} onEmojiSelect={handleEmojiSelect} />
-        </div>
-      )}
+        {showEmojiPicker && (
+          <div className="absolute m-0 bottom-[1rem] right-[0rem] opacity-80 flex ">
+            <Picker data={data} onEmojiSelect={handleEmojiSelect} />
+          </div>
+        )}
       </div>
       <div className="flex justify-between items-center p-2  rounded-b-2xl">
         <input
@@ -291,11 +303,11 @@ function SingleChatComponent(props: any) {
         </button>
 
         <button
-        className="bg-gray-700 text-white p-2 rounded-md ml-2"
-        onClick={toggleEmojiPicker}
-      >
-        😀
-      </button>
+          className="bg-gray-700 text-white p-2 rounded-md ml-2"
+          onClick={toggleEmojiPicker}
+        >
+          😀
+        </button>
       </div>
     </div>
   )

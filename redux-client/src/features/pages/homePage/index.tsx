@@ -26,14 +26,19 @@ const HomePage = (props: any) => {
   const [selectedChatId, setSelectedChatId] = useState<number | null>(null)
   const [onlineUsers, setOnlineUsers] = useState([])
   const userRecord = JSON.parse(localStorage.getItem("userRecord") as any)
+  const [loadingChats, setLoadingChats] = useState(false)
+  const [loadingUsers, setLoadingUsers] = useState(false)
 
   const fetchChatsData = async (fid: number) => {
+    setLoadingChats(true)
     try {
       const result = await fetchChatsById(fid)
       if (!result) return
       setChats(result)
     } catch (error) {
       console.error("Error fetching chats:", error)
+    } finally {
+      setLoadingChats(false)
     }
   }
   useEffect(() => {
@@ -47,11 +52,14 @@ const HomePage = (props: any) => {
 
   const getAllUsers = async () => {
     try {
+      setLoadingUsers(true)
       const result = await getAllUsersApi()
       setUsers(result)
       console.log(users)
     } catch (error) {
       console.error("Error fetching chats:", error)
+    } finally {
+      setLoadingUsers(false)
     }
   }
 
@@ -63,9 +71,13 @@ const HomePage = (props: any) => {
   return (
     <div className=" max-w-screen-xl overflow-y-hidden">
       <div className="">
-        <div className="overflow-y-hidden">
-          <List chats={chats} onClick={handleChatClick} users={users} />
-        </div>
+        {loadingChats ? (
+          <div>Loading chats...</div>
+        ) : (
+          <div className="overflow-y-hidden">
+            <List chats={chats} onClick={handleChatClick} users={users} />
+          </div>
+        )}
       </div>
     </div>
   )
